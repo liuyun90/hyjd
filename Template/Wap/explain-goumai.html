@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>购买欢乐送</title>
+
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Include the compiled Ratchet CSS -->
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/explain.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <header class="bar bar-nav">
+      <a class="icon icon-left pull-left" href="javascript:history.back();"></a>
+      <h1 class="title">购买欢乐送</h1>
+    </header>
+
+    <div class="content cz-explain">
+        <div class="slider"><img src="___EXPLAIN__/4/56550e5311389.jpg"></div>
+    	<div class="sd-explain cz-neiback">
+            <img src="{$web_tplpath}images/wanwan1.png" class="topimgs">
+    		<h4><span class="demo-icon icon-info-circled"></span> 购买也有好礼送！</h4>
+    		<div class="explain-news cz-tbback">
+    			<img src="/Picture/Explain/1/dsg-explain.jpg">
+    			<span><b>欢乐君毅然决定：</b></span>
+    			<h5>凡一次性购买100人次，即送5{$web_currency}。</h5>
+    			<span><i class="dian">◉</i> 即日起，凡一次性购买100人次的用户，即可获得5{$web_currency}返现！</span>
+                <br>
+                <a class="btn btn-yellow btn-block" href="{:U('index/index')}">立刻夺宝</a>
+    		</div>
+    	</div>
+
+        <ul class="table-view">
+            <li class="table-view-cell right-no-padding blue">
+                <span class="demo-icon icon-bell-1"></span> 奖励记录
+            </li>
+            <volist name="list_log" id="list">
+            <li class="table-view-cell right-no-padding">
+                {:time_format($list['create_time'])} 您一次性购买 <span class="red">{$list['record_id']}</span> 人次，获得 <span class="red">{$list['price']}</span> {$web_currency}。已冲入您的账户，请注意查收。
+            </li>
+            </volist>
+        </ul>
+
+		
+    </div>
+
+
+  </body>
+</html>

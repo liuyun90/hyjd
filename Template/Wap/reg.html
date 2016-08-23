@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>注册新用户</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <!-- Make sure all your bars are the first things in your <body> -->
+    <header class="bar bar-nav login-bar">
+      <a href="{:U('index/index')}" class="icon icon-left pull-left"></a> 
+      
+    </header>
+
+
+    <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
+    <div class="content loginback login-background">
+    	<div class="login-user-img">
+    		<img src="{$web_tplpath}images/loginuser.jpg">
+    	</div>
+    	<h5 class="login-title">注册新用户</h5>
+		<form method="post" action="{:U()}" class="form-user">
+			<div class="login input-group">
+  			<input type="text" placeholder="邮箱地址或手机号码" name="username">
+  			<input type="password" placeholder="设置登录密码" name="password">
+        <input type="password" placeholder="确认密码" name="repassword">
+        <input type="text" class="yzmin" placeholder="验证码" name="passcode">
+        <div class="yanzimg"><img src="{:U('Public/verify')}" class="passcode" /></div>
+			</div>
+      <div class="xieyis"><input type="checkbox" name="protocol" checked><a href="/news/more/id/2">用户服务协议</a></div>
+
+			<button class="btn btn-primary login-btn btn-block ajax-post" type="submit" target-form="form-user">同意协议并注册</button>
+		</form>
+		<div class="login-bottom">
+			<a class="bott-left" href="{:U('public/forgetpwd')}">忘记密码？</a>
+			<a href="{:U('public/login')}" class="bott-right">登录</a>
+		</div>
+
+    </div>
+
+  <script src="{$web_tplpath}js/jquery.min.js"></script>
+	<script type="text/javascript">
+  var tplpath='{$web_tplpath}';
+  var verifyimg = $(".passcode").attr("src");
+    $(".passcode").click(function() {
+        if (verifyimg.indexOf('?') > 0) {
+            $(".passcode").attr("src", verifyimg + '&random=' + Math.random());
+        } else {
+            $(".passcode").attr("src", verifyimg.replace(/\?.*$/, '') + '?' + Math.random());
+        }
+    });
+  </script>
+	<script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+	<script src="{$web_tplpath}js/ajax.js"></script>
+  </body>
+</html>

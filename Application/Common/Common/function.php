@@ -347,6 +347,10 @@ function activity_mod($price){
     return floor($price/100)*5;
 }
 
+function union_price($price,$buy_price,$num){
+    return (float)substr(sprintf("%.3f",($price-$buy_price)*($num/$price)/2),0,-1);
+}
+
 /**
  * 检查$pos(推荐位的值)是否包含指定推荐位$contain
  * @param number $pos 推荐位的值

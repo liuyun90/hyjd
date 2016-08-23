@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>支付订单</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/> 
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="bar bar-nav">
+      <a href="javascript:history.back();" class="icon icon-left pull-left"></a>
+      <h1 class="title">支付订单</h1>
+    </header>
+	<form action="" method="post">
+    <div class="content wtback">
+  		<ul class="table-view top1">
+        <li class="table-view-cell">商品合计 <span class="cart-money red">{$price}元（{$price}欢乐币）</span></li>
+  		  <li class="table-view-cell right-no-padding">
+  		      (第{$shop.no}期) {$shop.name}
+  		  </li>
+  		</ul>
+      <ul class="table-view" id="contentid">
+        <li class="table-view-cell">支付方式 <span class="cart-money red">￥{$price}</span></li>
+        <li class="table-view-cell right-no-padding">
+        <label class="pay-label"><input type="radio" name="pay_type" value="1" <egt name="black" value="$price">checked="checked"</egt>/> 余额支付 <small>（账户余额：<span class="red">{$black}欢乐币</span>）</small></label>
+        </li>
+        <notempty name="wx_pay">
+        <li class="table-view-cell right-no-padding">
+             <label class="pay-label"><input type="radio" name="pay_type" value="2" <lt name="black" value="$price">checked="checked"</lt>/> 微信支付</label>
+        </li>
+        </notempty>
+        <if condition="(is_weixin() neq 1) and (ali_pay neq '')">
+        <li class="table-view-cell right-no-padding">
+             <label class="pay-label"><input type="radio" name="pay_type" value="3"/> 支付宝</label>
+        </li>
+        </if>
+        <notempty name="yun_pay">
+        <li class="table-view-cell right-no-padding">
+             <label class="pay-label"><input type="radio" name="pay_type" value="5"/> 云支付</label>
+        </li>
+        </notempty>
+        <notempty name="pay_pal">
+        <li class="table-view-cell right-no-padding">
+             <label class="pay-label"><input type="radio" name="pay_type" value="6"/> PayPal</label>
+        </li>
+        </notempty>
+        <notempty name="iapp_pay">
+        <li class="table-view-cell right-no-padding">
+             <label class="pay-label"><input type="radio" name="pay_type" value="7"/> 爱贝支付</label>
+        </li>
+        </notempty>
+      </ul>
+      <ul class="col-sm-12 prod-padding">
+        <input value="{$shop.id}" name="pid" type="hidden">
+        <input value="{$shop.name}" name="name" type="hidden">
+        <input value="{$price}" name="price" type="hidden">
+        <input value="{:is_weixin()}" name="weixin" type="hidden">
+        <button type="submit" class="btn btn-negative btn-80 paybut" id="paybut">立即支付</button>	
+      </ul>
+    </div>
+	</form>
+  </body>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+<script src="{$web_tplpath}js/pay.js"></script>
+</html>

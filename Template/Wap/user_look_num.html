@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>用户中心</title>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+  <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+</head>
+<body class="eee">
+  <header class="bar bar-nav">
+    <a href="javascript:history.back();" class="icon icon-left pull-left"></a>
+    <h1 class="title">用户中心</h1>
+    <a href="{:U('Index/index')}" class="icon icon-home pull-right"></a>
+  </header>
+
+  <div class="content bottom-nopadding">
+    <ul class="table-view">
+      <li class="table-view-cell right-no-padding">
+        (第{$period.no}期) {$shop.name}
+        <br>
+        <div class="numbers">夺宝号码：</div><br>
+            <volist name="record" id="no"><div class="numbers">{$no}</div></volist>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

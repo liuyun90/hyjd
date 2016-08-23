@@ -1,0 +1,22 @@
+    <nav class="bar bar-tab">
+        <a class="tab-item <eq name="CONTROLLER_NAME" value="Index">active</eq>" href="{:U('index/index')}">
+            <span class="demo-icon icon-006"></span>
+            <span class="tab-label">夺宝</span>
+        </a>
+        <a class="tab-item <eq name="ACTION_NAME" value="announced">active</eq>" href="{:U('user/announced')}">
+            <span class="demo-icon icon-002"></span>
+            <span class="tab-label">最新揭晓</span>
+        </a>
+        <a class="tab-item <eq name="CONTROLLER_NAME" value="Activity">active</eq>" href="{:U('activity/index')}">
+            <span class="demo-icon icon-gift"></span>
+            <span class="tab-label">活动</span>
+        </a>
+        <a class="tab-item <eq name="ACTION_NAME" value="displays">active</eq>" href="{:U('user/displays')}">
+            <span class="demo-icon icon-camera-1"></span>
+            <span class="tab-label">晒单</span>
+        </a>
+        <a class="tab-item <if condition="(CONTROLLER_NAME eq 'User') AND (ACTION_NAME neq 'displays') AND (ACTION_NAME neq 'announced')">active</if>" href="{:U('user/index')}">
+            <span class="demo-icon icon-user"></span>
+            <span class="tab-label">我的</span>
+        </a>
+    </nav>

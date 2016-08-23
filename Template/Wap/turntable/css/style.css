@@ -1,0 +1,144 @@
+﻿html {
+  font-family: "Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+}
+
+body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,table,td,img,div{margin:0;padding:0;border:0;}
+body {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 17px;
+  line-height: 21px;
+  color: #000;
+  background-color: #fff;
+  overflow-x: hidden;
+}
+ul,ol{list-style-type:none;}
+select,input,img,select{vertical-align:middle;}
+input{ font-size:12px;}
+a{ text-decoration:none; color:#000;}
+a:hover{color:#c00; text-decoration:none;}
+.clear{clear:both;}
+/* 大转盘样式 */
+.banner{display:block;width:80%;margin-left:auto;margin-right:auto;margin-bottom: 20px;margin-top:-20%;}
+.banner .turnplate{display:block;width:100%;position:relative;}
+.banner .turnplate canvas.item{width:100%;}
+.banner .turnplate img.pointer{position:absolute;width:31.5%;height:42.5%;left:34.6%;top:23%;}
+
+.sy,.zzjl .titles {
+	display: block;
+	width: 100%;
+	margin:0 auto;
+	height: 31px;
+	line-height: 31px;
+	margin-top: 20px;
+	font-size: 16px;
+	text-align: center;
+	color: #fff;
+}
+.center {
+	display: block;
+	width: 100%;
+	background:#691B4F;
+	padding-top: 44px;
+}
+.topimg {
+	display: block;
+	width: 100%;
+	position: relative;
+}
+.topimg .backone {
+	display: none;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	font-size: 24px;
+	position: absolute;
+	top:0;
+	left: 10px;
+	z-index: 999;
+	color:#fff;
+	opacity: .9;
+}
+.topimg img {
+	position: relative;
+	left: 0;
+	top: 0;
+	width: 100%;
+}
+.cenback {
+	position: fixed;
+	background:rgba(0,0,0,.7);
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 9999;
+	display: none;
+}
+.h4 {
+	display: block;
+	width: 90%;
+	height: 26px;
+	line-height: 26px;
+	font-size: 18px;
+	color: #fff;
+	margin:0 auto;
+}
+.zzjl {
+	display: block;
+	width: 100%;
+	background: url(../images/cenback.jpg) repeat-x top center #D02D48;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+.zzjl .title {
+	padding-left: 15px;
+	text-align: left;
+}
+.zzjl dl {
+	display: block;
+	width: 90%;
+}
+.zzjl dl dd {
+	display: block;
+	width: 100%;
+	height: 26px;
+	line-height: 26px;
+	text-align: left;
+	font-size: 14px;
+	color: #fff;
+}
+.btns {
+	display: block;
+	margin: 0 auto;
+	width: 60%;
+	height: 35px;
+	line-height: 35px;
+	font-size: 18px;
+	color: #fff;
+	background: #FFCC00;
+	border-radius: 5px;
+	border:none;
+	margin-top: 15px;
+	color:#8C6900;
+	cursor: pointer;
+	text-align: center;
+}
+.red {color:#D02D48;}
+.fx {
+	position: absolute;
+	right: 0;
+	top: 0;
+	display:block;
+	width: 100%;
+	z-index: 9999;
+}
+.fx img {
+	display:block;
+	width: 100%;
+	z-index: 9999;
+}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>产品详情</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+	<link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body>
+	<header class="bar bar-nav">
+		<a href="javascript:history.back();" class="icon icon-left pull-left"></a>
+		<h1 class="title">产品详情</h1>
+		<a href="{:U('index/index')}" class="icon icon-home pull-right"></a>
+	</header>
+
+	<nav class="bar bar-tab">
+		<div class="col-sm-7">
+			<span class="tab-item">{$in_no}期在火热进行中</span>
+		</div>
+		<div class="col-sm-5">
+			<a href="{$in_url}" class="btn btn-negative btn-80">立即前往</a>
+		</div>
+	</nav>
+
+	<div class="content wtback">
+		<div class="scroll">
+			<div class="slider">
+				<div class="slide-group">
+					<div class="slide product-topimg">
+						<img src="{$pic}"></div>
+				</div>
+			</div>
+
+			<div class="container-fluid float-left border-bottom">
+				<div class="col-sm-12 prod-padding">
+					<eq name="state" value="2">
+						<span class="label label-green">已揭晓</span>
+						<else/>
+						<span class="label label-red">等待开奖</span>
+					</eq>
+					(第{$no}期) {$name}
+				</div>
+				<eq name="state" value="2">
+					<div class="col-sm-12 no-padding">
+						<ul class="table-view ">
+							<li class="table-view-cell media right-no-padding">
+								<img class="media-object pull-left user-img" src="{$user.img}">
+								<div class="media-body">
+									获 奖 者：
+									<a href="{:U('user/user?id='.$uid)}">{$user.name}</a>
+									<small class="green">（{$user.address}）</small>
+									<p>
+										本期参与：
+										<span class="red">{$count}</span>
+										人次
+										<br>揭晓时间：{$kaijang_time}</p>
+								</div>
+							</li>
+							<li class="table-view-cell red">幸运号码：{$kaijang_num} </li>
+						</ul>
+					</div>
+					<div class="col-sm-12 prod-padding">
+						<a href="{:U('shop/calculate?pid='.$pid)}" class="btn label-red-border label-fullc">计算规则</a>
+					</div>
+					<else/>
+					<div class="col-sm-12 label label-red">
+						<div class="col-sm-9 prod-padding">
+							<span class="times-text">揭晓倒计时：</span> <b class="times settime" diffe="{$kaijang_diffe}"></b>
+						</div>
+						<div class="col-sm-3 prod-padding">
+							<a href="{:U('shop/calculate?pid='.$pid)}" class="btn label-red-border label-fullc">计算规则</a>
+						</div>
+					</div>
+				</eq>
+				<div class="col-sm-12 prod-padding">
+					<span class="label label-fulla">
+						<empty name="user_no">
+							您没有参与本次夺宝哦!
+							<else />
+							您参与了：
+							<span class="red">{$user_no|count}</span>
+							人次
+							<br>
+							<div class="numbers">夺宝号码：</div><br>
+							<volist name="user_no" id="no"><div class="numbers" <eq name="kaijang_num" value="$no">style="color:#C43926;"</eq>>{$no} </div></volist>
+						</empty>
+					</span>
+				</div>
+			</div>
+			<div class="clear-left"></div>
+
+			<ul class="table-view top10">
+				<li class="table-view-cell">
+					<a href="{$moreurl}" class="navigate-right">
+						图文详情
+						<small>建议在wifi下查看</small>
+					</a>
+				</li>
+				<li class="table-view-cell">
+					<a href="{:U('shop/history?sid='.$id)}" class="navigate-right">往期揭晓</a>
+			</li>
+			<li class="table-view-cell">
+	                <a class="navigate-shared">分享本页</a>
+			</li>
+		</ul>
+
+		<ul class="table-view" id="record" url="{:U('shop/record?pid='.$pid)}">
+			<li class="table-view-cell">
+				所有参与记录
+				<small>（自{$time}开始）</small>
+			</li>
+			<volist name="record['list']" id="vo">
+				<li class="table-view-cell media right-no-padding">
+					<a href="{:U('user/user?id='.$vo['id'])}">
+						<img class="media-object pull-left user-img" src="{$vo.img}">
+						<div class="media-body">
+							{$vo.name}
+							<small>（{$vo.address}）</small>
+							<p>
+								参与了
+								<span class="red">{$vo['count']}</span>
+								人次
+								<small>{$vo.time}</small>
+							</p>
+						</div>
+					</a>
+				</li>
+			</volist>
+		</ul>
+	</div>
+</div>
+
+<div class="backdrops" id="navshared">
+    <div class="fx">
+        <img src="{$web_tplpath}images/fx.png">
+    </div>
+</div>
+<script type="text/javascript">var htmltype='record',product_over=true,servertime={$web_time};</script>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/dropload.min.js"></script>
+<script src="{$web_tplpath}js/jquery.downcount.min.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="{$web_tplpath}js/app.js"></script>
+<script src="{$web_tplpath}js/share.js"></script>
+</body>
+</html>

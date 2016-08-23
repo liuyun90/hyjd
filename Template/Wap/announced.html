@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>最新揭晓</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+	<link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body>
+
+	<header class="bar bar-nav">
+		<a href="javascript:history.back();" class="icon icon-left pull-left" data-transition="slide-out"></a>
+		<h1 class="title">最新揭晓</h1>
+		<a href="{:U('index/index')}" class="icon icon-home pull-right"></a>
+	</header>
+
+	<include file="{$web_tplpath}/nav.html" />
+	<div class="content wtback">
+		<div class="container-fluid scroll">
+			<notempty name="announced">
+				<div class="row" id="announced" url="{:U('user/announced')}">
+					
+				</div>
+				<div class="clear-left"></div>
+			<else/>
+				<div class="col-sm-12 no-shared">
+					<div class="col-sm-12">
+						<span class="demo-icon icon-paper-plane-2"></span>
+						还没有数据。
+					</div>
+				</div>
+			</notempty>
+		</div>
+	</div>
+	<script type="text/javascript">var htmltype='announced',tplpath='{$web_tplpath}',servertime={$web_time};</script>
+	<script src="{$web_tplpath}js/jquery.min.js"></script>
+	<script src="{$web_tplpath}js/dropload.min.js"></script>
+	<script src="{$web_tplpath}js/jquery.downcount.min.js"></script>
+	<script src="{$web_tplpath}js/app.js"></script>
+</body>
+</html>

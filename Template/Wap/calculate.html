@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>计算规则</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+
+  <header class="bar bar-nav">
+    <a href="javascript:history.back();" class="icon icon-left pull-left"></a>
+    <h1 class="title">产品详情</h1>
+    <a href="{:U('index/index')}" class="icon icon-home pull-right"></a>
+  </header>
+    <div class="content">
+      <div class="container-fluid float-left prod-padding">
+        <div class="col-sm-12 prod-padding text-center">
+          <div class="col-sm-12">
+            <span class=" label label-calculate label-red">
+              <span class="times-text">{$calculate['shop']['kaijang_num']?$calculate['shop']['kaijang_num']:'?'}<br>本期幸运号码</span>
+            </span>
+            <span class=" label label-operator">
+              =
+            </span>
+            <eq name="Think.config.KJ_THIRD_PARTY" value="0">
+            <span class=" label label-operator4">
+            <span class="red"><eq name="calculate['shop']['state']" value="2">{$calculate['shop']['kaijiang_count']}<else/>?</eq></span><br>最后50个时间求和
+            </span>
+            <else/>
+            <span class=" label label-operator3">
+              <span class=" label label-operator1">
+                <span class="red">{$calculate['shop']['kaijiang_count']}</span><br>最后50个时间求和
+              </span>
+              <span class=" label label-operator2">
+                +
+              </span>
+              <span class=" label label-operator1">
+                <span class="red">{$calculate['shop']['kaijiang_ssc']}</span><br>“时时彩”开奖号码
+              </span>
+            </span>
+            </eq>
+            <span class=" label label-operator">
+              %
+            </span>
+            <span class=" label label-operator4">
+              <span class="red">{$calculate['shop']['number']}</span><br>该商品总需人次
+            </span>
+            <span class=" label label-operator">
+              +
+            </span>
+            <span class=" label label-operator4">
+              <span class="red">10000001</span><br>原始数
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="clear-left"></div>
+      <notempty name="calculate['kjtime']">
+      <ul class="table-view">
+        <li class="table-view-cell right-no-padding">截至该商品开奖时间点前最后50条全站参与记录<br><span class="red">{$calculate['shop']['kaijiang_count']}</span></li>
+        <volist name="calculate['kjtime']" id="vo">
+        <li class="table-view-cell table-view-divider right-no-padding" style="font-size:12px">
+        用户帐号：{$vo.nickname}<br>
+        购买商品：{$vo.name}({$vo.no})<br>
+        夺宝时间：{$vo.create_hour} <span class="red">➜ {$vo.create_int}</span>
+        </li>
+        </volist>
+      </ul>
+      </notempty> 
+    </div>
+  </body>
+</html>

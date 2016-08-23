@@ -1,0 +1,66 @@
+<extend name="Public/base"/>
+
+<block name="body">
+<div>
+<div class="page-head">
+	<h2>消息</h2>
+</div>
+<div class="cl-mcont">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="block-flat">
+				<div class="header">							
+					<h3 class="hthin">{$meta_title}</h3>
+				</div>
+				<div class="content">
+					<ul class="nav nav-tabs">
+						<li><a href="{:U('Reply/beadded')}">关注回复</a></li>
+						<li class="active"><a href="{:U('Reply/keyword')}">关键词回复</a></li>
+					</ul>
+					<div class="row">
+						<div class="col-md-2 pull-right">
+							<a class="btn btn-success" href="{:U('addkeyword')}">新建关键字</a>
+						</div>
+					</div>
+					<table class="no-border blue">
+						<thead class="no-border">
+						<tr>
+							<th style="width:40%;">关键字</th>
+							<th style="width:40%;">回复类型</th>
+							<th class="text-right">操作</th>
+						</tr>
+						</thead>
+						<notempty name="list">
+						<tbody class="no-border-y">
+						<volist name="list" id="vo">
+						<tr>
+							<td style="width:40%;">{$vo['keyword']}</td>
+							<td style="width:40%;">{$vo['msgtype']|msgtype}</td>
+							<td class="text-right"><a data-placement="left" data-toggle="tooltip" data-original-title="修改" class="label label-primary" href="{:U('editkeyword?id='.$vo['id'])}"><i class="fa fa-pencil"></i></a>
+                				<a data-placement="left" data-toggle="tooltip" data-original-title="删除" class="label label-danger ajax-get" href="{:U('delkeyword?id='.$vo['id'])}"><i class="fa fa-times"></i></a></td>
+						</tr>
+						</volist>
+						</tbody>
+						<else/>
+						<td colspan="2"> aOh! 暂时还没有内容! </td>
+						</notempty>
+					</table>
+					<div class="content col-lg-12 pull-left">
+                        <div class="panel-foot text-center">
+                            <div class="page">{$_page}</div>
+                        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+		$(document).ready(function(){
+			highlight_subnav('{:U('Reply/beadded')}');
+		});
+	</script>
+</block>

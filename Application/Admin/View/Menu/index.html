@@ -1,0 +1,85 @@
+<extend name="Public/base"/>
+<block name="style">
+	<css href="__STATIC__/face/css/face.css" />
+</block>
+<block name="body">
+	<div>
+		<div class="page-head">
+			<h2>微信菜单设置</h2>
+		</div>
+		<div class="cl-mcont">
+			<div class="alert alert-warning">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				<i class="fa fa-warning sign"></i><strong>提示!</strong> 拖动菜单可修改排序. 修改完成记得点击保存.
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+							<h3 class="hthin">{$meta_title}</h3>
+						</div>
+						<div class="content">
+						<div><a class="addnav" href="#"><i class="fa fa-plus"></i> 添加栏目</a></div>
+						 <div class="row">
+      						<div class="col-sm-5 col-md-5">
+							<div class="dd" id="list">
+								<ol class="dd-list">
+									<volist name="nav" id="list">
+									<li class="dd-item" data-type="{$list.type}" data-name="{$list.name}" data-key="{$list.key}" data-url="{$list.url}" data-media_id="{$list.media_id}">
+										<div class="pull-right value">
+										<a class="addsub" href="javascript:;"><i class="fa fa-plus"></i></a>
+										<a href="javascript:;" id="editmenu"><i class="fa fa-pencil"></i></a>
+										<a href="javascript:;" id="delnav"><i class="fa fa-trash-o"></i></a>
+										</div>
+										<div class="dd-handle">
+										{$list['name']}
+										</div>
+										<notempty name="list.sub_button">
+										<ol class="dd-list">
+										<volist name="list.sub_button" id="sub">
+											<li class="dd-item" data-type="{$sub.type}" data-name="{$sub.name}" data-key="{$sub.key}" data-url="{$sub.url}" data-media_id="{$sub.media_id}">
+												<div class="pull-right value">
+												<a class="addsub" href="javascript:;" style="display: none;"><i class="fa fa-plus"></i></a>
+												<a href="javascript:;" id="editmenu"><i class="fa fa-pencil"></i></a>
+												<a href="javascript:;" id="delnav"><i class="fa fa-trash-o"></i></a>
+												</div>
+												<div class="dd-handle">
+												{$sub['name']}
+												</div>
+											</li>
+										</volist>
+										</ol>
+										</notempty>
+									</li>
+									</volist>
+								</ol>
+							</div>
+							</div>
+							<div class="col-sm-7 col-md-7" id="edit">
+								
+							</div>
+							<form action="{:U('')}" class="form-horizontal" method="post">
+							<div class="form-group">
+							  <div class="col-sm-offset-2 col-sm-10">
+								<button type="button" class="btn btn-primary" url="{:U()}">保 存</button>
+							  </div>
+						  	</div>
+						  	</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+<js href="__JS__/jquery.nestable/jquery.nestable.js" />
+<js href="__JS__/behaviour/weixin.js" />
+<script type="text/javascript">
+	$(document).ready(function(){
+		highlight_subnav('{:U('Menu/index')}');
+		menu.init();
+		//$("#data").val(JSON.stringify($("#list").nestable('serialize')));
+	});
+</script>
+</block>

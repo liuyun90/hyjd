@@ -1,0 +1,257 @@
+<extend name="Public/base"/>
+<block name="style">
+	<css href="__STATIC__/face/css/face.css" />
+</block>
+<block name="body">
+	<div>
+		<div class="page-head">
+			<h2>消息</h2>
+		</div>
+		<div class="cl-mcont">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+							<h3 class="hthin">{$meta_title}</h3>
+						</div>
+						<div class="content">
+							<ul class="nav nav-tabs">
+								<li><a href="{:U('Reply/beadded')}">关注回复</a></li>
+								<li class="active"><a href="{:U('Reply/keyword')}">关键词回复</a></li>
+							</ul>
+							<form action="{:U('')}" class="form-horizontal" method="post">
+								<div class="tab-content no-padding">
+									<div class="chat-wi">
+										<div class="form-group">
+											<label class="col-sm-1 control-label">规则名</label>
+											<div class="col-sm-6">
+												<input type="text" name="rule_name" class="form-control" value="{$info.rule_name|default=''}" placeholder="规则名"/>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-1 control-label">关键字</label>
+											<div class="col-sm-6">
+												<input type="text" name="keyword" class="form-control" value="{$info.keyword|default=''}" placeholder="关键字"/>
+											</div>
+										</div>
+										<div class="chat-tools">
+											<ul class="nav nav-tabs">
+												<li <eq name="info.msgtype" value="mpnews">class="active"</eq>>
+													<div data-target="#appmsgArea" data-toggle="tab" data-msgtype="mpnews"><i class="fa fa-list-alt"></i>图文</div>
+												</li>
+												<li <if condition="($info.msgtype eq 'text') OR ($info.msgtype eq '')">class="active"</if>>
+													<div data-target="#textArea" data-toggle="tab" data-msgtype="text"><i class="fa fa-pencil"></i>文字</div>
+												</li>
+												<li <eq name="info.msgtype" value="image">class="active"</eq>>
+													<div data-target="#imageArea" data-toggle="tab" data-msgtype="image"><i class="fa fa-picture-o"></i>图片</div>
+												</li>
+												<li <eq name="info.msgtype" value="voice">class="active"</eq>>
+													<div data-target="#audioArea" data-toggle="tab" data-msgtype="voice"><i class="fa fa-microphone"></i>语音</div>
+												</li>
+												<li <eq name="info.msgtype" value="video">class="active"</eq>>
+													<div data-target="#videoArea" data-toggle="tab" data-msgtype="video"><i class="fa fa-video-camera"></i>视频</div>
+												</li>
+											</ul>
+										</div>
+									</div>
+									<div class="tab-pane <if condition="($info.msgtype eq 'text') OR ($info.msgtype eq '')">active</if>" id="textArea">
+										<div class="layui-form">
+											<textarea name="content" id="LAY_desc"><eq name="info.msgtype" value="text">{$info['content']}</eq></textarea>
+										</div>
+									</div>
+									<div class="tab-pane <eq name="info.msgtype" value="mpnews">active</eq>" id="appmsgArea">
+										<div class="cl-mcont white height188">
+											<div class="gallery-cont">
+											<notempty name="info['data_list']">
+												<div class="col-md-6 spacer-bottom-sm item w2">
+												<div class="container-fluid wxls white-box">
+												<div class="head imghg">
+													<span class="pull-right">
+														<i class="fa fa-trash-o fa-lg color imgdel"></i>
+													</span>
+												</div>
+												<div class="img container-fluid no-padding">
+												<volist name="info['data_list']" id="item">
+												<eq name="i" value="1">
+												<div class="tw">
+													<div class="wxtitle">{$item['title']}</div>
+													<img src="{$item['PicUrl']}" class="img-responsive">
+												</div>
+												<else/>
+												<div class="wxdtw">
+													<div class="wxtwtitle">
+														<h5>{$item['title']}</h5></div>
+														<div class="wxtwimg">
+														<img src="{$item['PicUrl']}" class="img-responsive">
+													</div>
+												</div>
+												</eq>
+												</volist>
+												</div>
+												</div>
+												</div>
+											</notempty>
+											</div>
+										</div>
+										<neq name="info.msgtype" value="mpnews">
+										<div class="edit-up col-lg-12 upnews">
+											<ul class="nav nav-pills">
+												<li class="active opiframe" url="{:U('Material/iframe',array('type'=>'news','send'=>1))}"><i class="fa fa-cloud"></i>从素材库中选择</li>
+												<li class="addmsg" data-url="{:U('Material/addmsg')}"><i class="fa fa-plus"></i>新建图文消息</li>
+											</ul>
+										</div>
+										</neq>
+									</div>
+									<div class="tab-pane <eq name="info.msgtype" value="image">active</eq>" id="imageArea">
+										<div class="cl-mcont white height188">
+											<div class="gallery-cont">
+											<eq name="info.msgtype" value="image">
+												<div class="item col-sm-4 col-md-4 col-lg-3">
+													<div class="photo">
+														<div class="head imghg">
+														<span class="pull-right"><i class="fa fa-trash-o fa-lg color imgdel"></i></span>
+														</div>
+														<div class="img"> 
+															<img src="{$info['content']|getImgMedia}">
+														</div>
+													</div>
+												</div>
+											</eq>
+											</div>
+										</div>
+										<neq name="info.msgtype" value="image">
+										<div class="edit-up col-lg-12 upimage">
+											<ul class="nav nav-pills">
+												<li class="active opiframe" url="{:U('Material/iframe',array('type'=>'image','show'=>1))}"><i class="fa fa-cloud"></i>从素材库中选择</li>
+												<li><input type="file" id="upload_img"></li>
+											</ul>
+										</div>
+										</neq>
+									</div>
+									<div class="tab-pane <eq name="info.msgtype" value="voice">active</eq>" id="audioArea">
+										<div class="cl-mcont white height188">
+											<div class="gallery-cont">
+												<eq name="info.msgtype" value="voice">
+												<div class="item wximg">
+													<div class="container-fluid wxls white-box">
+														<div class="head imghg">
+															<span class="pull-right"><i class="fa fa-trash-o fa-lg color imgdel"></i></span>
+														</div>
+														<div class="col-md-3 audio"><i class="fa fa-rss"></i></div>
+														<div class="col-md-8"><p>{:msubstr($info['content'],0,7)}</p></div>
+													</div>
+												</div>
+												</eq>
+											</div>
+										</div>
+										<neq name="info.msgtype" value="voice">
+										<div class="edit-up col-lg-12 upaudio">
+											<ul class="nav nav-pills">
+												<li class="active opiframe" url="{:U('Material/iframe',array('type'=>'voice'))}"><i class="fa fa-cloud"></i>从素材库中选择</li>
+												<li><input type="file" id="upload_audio"></li>
+											</ul>
+										</div>
+										</neq>
+									</div>
+									<div class="tab-pane <eq name="info.msgtype" value="video">active</eq>" id="videoArea">
+										<div class="cl-mcont white height188">
+											<div class="gallery-cont">
+												<eq name="info.msgtype" value="video">
+												<div class="item wximg">
+													<div class="container-fluid wxls white-box">
+														<div class="head imghg">
+															<span class="pull-right"><i class="fa fa-trash-o fa-lg color imgdel"></i></span>
+														</div>
+														<div class="col-md-3 video"><i class="fa fa-rss"></i></div>
+														<div class="col-md-8"><p>{:msubstr($info['content'],0,7)}</p></div>
+													</div>
+												</div>
+												</eq>
+											</div>
+										</div>
+										<neq name="info.msgtype" value="video">
+										<div class="edit-up col-lg-12 upvideo">
+											<ul class="nav nav-pills">
+												<li class="active opiframe" url="{:U('Material/iframe',array('type'=>'video'))}"><i class="fa fa-cloud"></i>从素材库中选择</li>
+												<li><input type="file" id="upload_video"></li>
+											</ul>
+										</div>
+										</neq>
+									</div>
+									<input type="hidden" name="id" id="id" value="{$info.id|default=''}">
+									<input type="hidden" name="msgtype" id="msgtype" value="{$info.msgtype|default='text'}">
+									<input type="hidden" name="media_id" id="media_id" value="{$info.media_id|default=''}">
+									<input type="hidden" name="data_list" id="data_list" value='{$info.data_list|json_encode|addslashes}'>
+									<div class="form-group no-margin-y">
+										<div class="col-sm-offset-2 col-sm-10 spacer-xs">
+											<button class="btn btn-primary ajax-post" type="submit" target-form="form-horizontal">提 交</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<js href="__STATIC__/face/face_icon.js" />
+	<js href="__STATIC__/face/face.js" />
+	<js href="__STATIC__/uploadify/jquery.uploadify.min.js" />
+	<js href="__JS__/behaviour/weixin.js" />
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#upload_img").uploadify({
+			"height"          : 20,
+			"swf"             : "__STATIC__/uploadify/uploadify.swf",
+			"fileObjName"     : "download",
+			"buttonClass"     : "fa fa-cloud-upload no-padding",
+			"buttonText"      : "上传图片",
+			"uploader"        : "{:U('Material/uploadweixin',array('type'=>'image','session_id'=>session_id()))}",
+			"width"           : 100,
+			'removeTimeout'	  : 1,
+			'fileTypeExts'	  : '*.jpg; *.png; *.gif; *.jpeg;',
+			"onUploadSuccess" : uploadPicture,
+			'onFallback' : function() {
+				alert('未检测到兼容版本的Flash.');
+			}
+		});
+		$("#upload_audio").uploadify({
+		"height"          : 20,
+		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+		"fileObjName"     : "download",
+		"buttonClass"     : "fa fa-cloud-upload no-padding",
+		"buttonText"      : "上传语音",
+		"uploader"        : "{:U('Material/uploadweixin',array('type'=>'audio','session_id'=>session_id()))}",
+		"width"           : 100,
+		'removeTimeout'	  : 1,
+		'fileTypeExts'	  : '*.arm; *.mp3;*.wma; *.wav; *.amr;',
+		"onUploadSuccess" : uploadPicture,
+		'onFallback' : function() {
+			alert('未检测到兼容版本的Flash.');
+		}
+	});
+	$("#upload_video").uploadify({
+		"height"          : 20,
+		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+		"fileObjName"     : "download",
+		"buttonClass"     : "fa fa-cloud-upload no-padding",
+		"buttonText"      : "上传视频",
+		"uploader"        : "{:U('Material/uploadweixin',array('type'=>'video','session_id'=>session_id()))}",
+		"width"           : 100,
+		'removeTimeout'	  : 1,
+		'fileTypeExts'	  : '*.mp4; *.flv; *.avi;',
+		"onUploadSuccess" : uploadPicture,
+		'onFallback' : function() {
+			alert('未检测到兼容版本的Flash.');
+		}
+	});
+		$("[data-toggle='tab']").click(function(){
+			$("#msgtype").val($(this).attr('data-msgtype'));
+		});
+		highlight_subnav('{:U('Reply/beadded')}');
+	});
+</script>
+</block>

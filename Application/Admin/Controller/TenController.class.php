@@ -50,10 +50,6 @@ class TenController extends WebController {
         if(empty($cate_id)){
             $this->error('参数错误!');
         }
-        $child = M('Ten')->where(array('pid'=>$cate_id))->field('id')->select();
-        if(!empty($child)){
-            $this->error('请先删除该专区下的子专区');
-        }
 		$document_list = M('Shop')->where(array('ten'=>$cate_id))->field('id')->select();
         if(!empty($document_list)){
             $this->error('请先删除该专区下的商品');

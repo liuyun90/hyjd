@@ -19,12 +19,12 @@ def my_job():
 			sched.reschedule_job(job.id, trigger='cron', hour='10',second='50')
 	jiang = KaiJiang(dbconfig)
 	jiang.TimeFactor()
-	print 'time: %s' % datetime.now()
+	print('开奖结束时间: %s' % datetime.now())
 
 def my_kj():
 	jiang = KaiJiang(dbconfig)
 	jiang.TimeFactor()
-	print 'time: %s' % datetime.now()
+	print('开奖结束时间: %s' % datetime.now())
 
 sched = BlockingScheduler()
 f = open("config.json")

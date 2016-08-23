@@ -51,9 +51,9 @@ class PublicController extends Controller {
         }
     }
 	
-	public function login($username = null, $password = null){
+	public function login($username = null, $password = null, $app = 0){
         if(IS_POST){
-            $user = D('Public')->login($username, $password);
+            $user = D('Public')->login($username, $password, $app);
             if($user[0]>0){
                 //启动用户登录类活动
                 activity(2,$user[0],$user[0]);
@@ -303,7 +303,7 @@ class PublicController extends Controller {
             if(M('user')->where($map)->getField('id')){
                 $this->error('用户已经注册！');
             }
-            if(!$this->check_name(I('phone'))){
+            if(!$this->check_name(I('username'))){
                 $this->error('请正确输入注册手机号');
             }
             $uid = D('Public')->reg();

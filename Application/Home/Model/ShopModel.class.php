@@ -146,8 +146,13 @@ class ShopModel extends Model{
 	}
 
 	public function overChange($date,$period){
+		$ten=M('ten')->where(array('id'=>$date["ten"],'status'=>1))->find();
 		$date["number"]=$period["number"];
 		$date["surplus"]=$date["price"]-$period["number"];
+		$date["ten_unit"]=$date["ten"]?$ten['unit']:1;
+		$date["ten_name"]=$ten["title"];
+		$date["ten_restrictions"]=$date["ten"]?$ten["restrictions"]:0;
+		$date["ten_restrictions_num"]=$date["ten"]?$ten["restrictions_num"]:0;
 		$date["pid"]=$period["id"];
 		$date["sid"]=$period["sid"];
 		$date["cid"]=$date["category"];
@@ -178,6 +183,11 @@ class ShopModel extends Model{
 		$date["kaijiang_count"]=$period["kaijiang_count"];
 		$date["kaijiang_ssc"]=$period["kaijiang_ssc"];
 		$date["end_time"]=$period["end_time"];
+		if(UID){
+			$date['no_count']=count($this->user_num(UID,$date['id']));
+		}else{
+			$date['no_count']=0;
+		}
 		unset($date["status"],$date["display"],$date["cover_id"],$date["update_time"]);
 		return $date;
 	}

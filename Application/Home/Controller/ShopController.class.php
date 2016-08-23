@@ -21,6 +21,9 @@ class ShopController extends WapController {
     		$this->hist($info['sid']);
 			$this->assign('pos',1);
 			$this->assign('record',D('Shop')->record($info['pid'],1));
+			if(is_weixin()){
+				$this->assign($this->getSignPackage());
+			}
 			$this->assign($info);
 	        $this->display($this->tplpath."product.html");
     	}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="myApp">
+	<head>
+		<meta charset="utf-8">
+		<title>微信商城</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    	<meta name="apple-mobile-web-app-capable" content="yes">
+    	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+	</head>
+	<body class="eee">
+		<header class="bar bar-nav">
+			<a href="{:U('user/index')}" class="icon icon-left pull-left"></a>
+			<h1 class="title">收货地址管理</h1>
+    	</header>
+    	<nav class="bar bar-tab">
+    		<div class="col-sm-12 padding-lr top5">
+			  <a href="{:U('user/address_add')}" class="btn btn-negative btn-block">添加新地址</a>
+			</div>
+		</nav>
+		<div class="content no-padding">
+      <volist name="address" id="vo">
+			<ul class="table-view <elt name="i" value="1">top1</elt> margin-bottom">
+				<li class="table-view-all padding-lr">
+					<div class="col-sm-4 media-body prod-padding">{$vo['nickname']}</div>
+					<div class="col-sm-8 media-body prod-padding">{$vo['tel']}</div>
+				  <div class="col-sm-12 media-body prod-padding">{$vo['province']}{$vo['city']}{$vo['dist']}{$vo['address']}</div>
+				  <div class="col-sm-12 media-body prod-padding border-top">
+				    	<label class="col-sm-4 no-padding" name="pinboard" url="{:U('user/address_default?id='.$vo['id'])}" onclick="pinboard(this)">
+				    		<span class="radio-btn <eq name="vo['default']" value="0"></eq> <eq name="vo['default']" value="1">active</eq>"></span> 设为默认
+				    	</label>
+				    	<div class="col-sm-4 no-padding text-right">
+				    		<a href="{:U('user/address_edit?id='.$vo['id'])}"><span class="demo-icon icon-edit"></span> 编辑</a>
+				    	</div>
+				    	<div class="col-sm-4 no-padding text-right">
+				    		<a href="{:U('user/address_del?id='.$vo['id'])}" class="ajax-get"><span class="demo-icon icon-trash-empty"></span> 删除</a>
+				    	</div>
+				  </div>
+				</li>
+        <div class="clear-left"></div>
+			</ul>
+      </volist>
+		</div>
+
+		<!-- 华丽的分割线 -->
+    <script src="{$web_tplpath}js/jquery.min.js"></script>
+    <script src="{$web_tplpath}js/dropload.min.js"></script>
+    <script src="{$web_tplpath}js/app.js"></script>
+    <script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+    <script src="{$web_tplpath}js/ajax.js"></script>
+	</body>
+</html>

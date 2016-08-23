@@ -57,6 +57,10 @@
                         if(data.url){
                             location.href = data.url;
                         }else{
+                            var errorback = $(that).attr('errorback');
+                            if(errorback){
+                                eval(errorback);
+                            }
                            $(that).prop('disabled', false); 
                         }
                     });

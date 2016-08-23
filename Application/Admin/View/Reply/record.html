@@ -1,0 +1,58 @@
+<extend name="Public/base"/>
+
+<block name="body">
+<div>
+<div class="page-head">
+	<h2>消息</h2>
+</div>
+<div class="cl-mcont">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="block-flat">
+				<div class="header">							
+					<h3 class="hthin">{$meta_title}</h3>
+				</div>
+				<div class="content">
+					<ul class="nav nav-tabs">
+						<li><a href="{:U('Reply/group')}">消息群发</a></li>
+						<li class="active"><a href="{:U('Reply/record')}">已发送消息</a></li>
+					</ul>
+					<table class="no-border blue">
+						<thead class="no-border">
+						<tr>
+							<th style="width:80%;">消息类型</th>
+							<th style="width:20%;">发送时间</th>
+						</tr>
+						</thead>
+						<notempty name="newslist">
+						<tbody class="no-border-y">
+						<volist name="newslist" id="vo">
+						<tr>
+							<td style="width:80%;">{$vo['msgtype']|msgtype}消息</td>
+							<td style="width:20%;">{$vo.send_timt|time_format=###,"Y-m-d"}</td>
+						</tr>
+						</volist>
+						</tbody>
+						<else/>
+						<td colspan="2"> aOh! 暂时还没有内容! </td>
+						</notempty>
+					</table>
+					<div class="content col-lg-12 pull-left">
+                        <div class="panel-foot text-center">
+                            <div class="page">{$_page}</div>
+                        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+		$(document).ready(function(){
+			highlight_subnav('{:U('Reply/group')}');
+		});
+	</script>
+</block>

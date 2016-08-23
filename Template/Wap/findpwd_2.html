@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>找回密码</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <!-- Make sure all your bars are the first things in your <body> -->
+    <header class="bar bar-nav login-bar">
+      <a href="{:U('index/index')}" class="icon icon-left pull-left"></a> 
+      
+    </header>
+
+
+    <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
+    <div class="content loginback login-background">
+    	<div class="login-user-img">
+    		<img src="{$web_tplpath}images/loginuser.jpg">
+    	</div>
+    	<h5 class="login-title">找回密码</h5>
+		
+			<div class="login sendmail">
+               验证邮件已发送至：<br>
+               <span class="red">{$username}</span><br>
+               请验证邮箱并完成验证。
+			</div>
+
+			<button class="btn btn-primary login-btn btn-block ajax-get" type="submit" url="{:U('public/againpwd',array('uid'=>$uid))}">再次发送邮件</button>
+		
+		<div class="login-bottom">
+			<a class="bott-left" href="{:U('public/login')}">登录</a>
+			<a href="{:U('public/reg')}" class="bott-right">注册</a>
+		</div>
+
+    </div>
+
+    <script src="{$web_tplpath}js/jquery.min.js"></script>
+    <script type="text/javascript">var tplpath='{$web_tplpath}'</script>
+	   <script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+	<script src="{$web_tplpath}js/ajax.js"></script>
+  </body>
+</html>

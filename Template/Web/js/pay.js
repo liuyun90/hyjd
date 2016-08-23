@@ -71,6 +71,9 @@
 			case 6:
 				payPal(this);
 				break;
+			case 7:
+				iappPay(this);
+				break;
 			default:
 				yuePay(this);
 		}
@@ -121,6 +124,8 @@
             input.val(args[arg]);
             form.append(input);
         }
+        form.appendTo("body");
+        form.css('display','none');
         form.submit();
     }
 
@@ -210,6 +215,29 @@
 				    $(event).prop('disabled', false);
 				});
 				$('form').attr('action',ThinkPHP.U('pay/pay_pal')).attr('target','_blank').submit();
+    		}else{
+    			layer.msg(status.info, {icon: 2});
+    			$(event).prop('disabled', false);
+    		}
+    	});
+	}
+
+	function iappPay(event){
+    	$.ajaxSetup({  
+		    async : false
+		});
+    	$.get(ThinkPHP.U("pay/check_pay",{"price":$('input[name="price"]').val(),"pid":$('input[name="pid"]').val()})).success(function(status){
+    		if(status.status){
+    			layer.confirm('<h3>请在新开窗口完成支付！</h3>完成付款后根据您的情况进行以下操作！', {
+					icon: 0,
+		    		btn: ['完成支付','遇到问题，重新选择'] //按钮
+				}, function(index){
+				    location.href = ThinkPHP.U('user/index');
+				}, function(index){
+				    layer.close(index);
+				    $(event).prop('disabled', false);
+				});
+				$('form').attr('action',ThinkPHP.U('pay/pay_iapp')).attr('target','_blank').submit();
     		}else{
     			layer.msg(status.info, {icon: 2});
     			$(event).prop('disabled', false);

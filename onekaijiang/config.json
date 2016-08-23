@@ -5,6 +5,10 @@
 	"db":"lfonepay",
 	"port":3306,
 	"prefix":"lf_",
+	"party":0,
 	"charset":"utf8",
-	"party":0
+	"appid":"wx3281b63f6c9c6a49",
+	"secrect":"7714d321ebbba28c1f7d96e2d9280669",
+	"zb":1,
+	"web_url":"http://1.hongxunkeji.com"
 }

@@ -38,7 +38,7 @@
 					<tbody class="no-border-y">
 					<volist name="periodlist" id="vo">
 					<tr>
-						<td style="width:20%;">{$vo['no']}</td>
+						<td style="width:20%;"><if condition="($Think.config.KJ_THIRD_PARTY eq 0) AND ($vo.state eq 0) "><a href="#" class="opiframe" url="{:U('shop/zjuser?id='.$vo['id'])}">{$vo['no']}</a><else/>{$vo['no']}</if></td>
 						<td style="width:20%;">{$vo['state']|get_state}</td>
 						<td style="width:20%;">{$vo.create_time|time_format=###,"Y-m-d H:i:s"}</td>
 						<td>
@@ -77,6 +77,19 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$(".nscroller").nanoScroller();
+	$(".opiframe").click(function(){
+		 if (target = $(this).attr('url')) {
+			layer.open({
+				type: 2,
+				title: false,
+				closeBtn: false,
+				area: ['600px', '350px'],
+				fix: false,
+				skin: 'layui-layer-nobg',
+				content: [target,'no']
+			});
+		}
+	})
 });
 </script>
 </html>

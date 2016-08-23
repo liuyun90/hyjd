@@ -13,15 +13,27 @@ class ActivityController extends WapController {
 	
 	public function activity($id){
 		$this->assign('ticket',$ticket);
-		$this->activity_tpl($id,'web_index_tpl');
+		if(is_weixin() || is_mobile()){
+			$this->activity_tpl($id,'wap_index_tpl');
+		}else{
+			$this->activity_tpl($id,'web_index_tpl');
+		}
 	}
 	
 	public function lists($id){
-		$this->activity_tpl($id,'web_index_tpl');
+		if(is_weixin() || is_mobile()){
+			$this->activity_tpl($id,'wap_list_tpl');
+		}else{
+			$this->activity_tpl($id,'web_index_tpl');
+		}
 	}
 	
 	public function content($id){
-		$this->activity_tpl($id,'web_content_tpl');
+		if(is_weixin() || is_mobile()){
+			$this->activity_tpl($id,'wap_content_tpl');
+		}else{
+			$this->activity_tpl($id,'web_content_tpl');
+		}
 	}
 	
 	public function ticket(){
@@ -51,6 +63,53 @@ class ActivityController extends WapController {
 			$this->assign('info',$info);
 			$this->assign('list_log',$list_log);
 			$this->display($this->tplpath.$info[$tpl]);
+		}
+	}
+
+	public function sendhonbao(){
+		if(M('user')->where('id='.UID.' and status=1')->getField('hongbao')<1){
+			$this->auth  = new WechatAuth(C('WX_APPID'), C('WX_APPSECRET'));
+			$data['mch_billno']=A('Pay')->create_sn();
+			$data['mch_id']=C('WX_PAY_MCHID');
+			$data['send_name']=C("WEB_SITE_TITLE");
+			$data['re_openid']=session('openid');
+			$data['total_amount']=100;
+			$data['total_num']=1;
+			$data['wishing']='感谢参与分享赢红包活动';
+			$data['act_name']='分享赢红包活动';
+			$data['remark']='分享好友一起来赢红包';
+			$return=$this->auth->sendhonbao($data,C('WX_PAY_KEY'));
+		}
+		if($return['return_code']=='SUCCESS'){
+			activity_log('hongbao_jl',1,UID);
+		}
+		$this->ajaxReturn($return);
+	}
+
+	public function apphongbao(){
+		if(!defined('UID') || UID==0){
+	    	$this->error('请先登录！');
+	    }
+	    $user=M('user')->field('hongbao,phone')->where('id='.UID.' and status=1 and ')->find();
+	    if($user['hongbao']<1){
+	    	if($user['phone']==0){
+	    		$this->error('请先绑定手机！');
+	    		return false;
+	    	}
+	    	M('user')->where('id='.UID.' and status=1')->setInc('black',1);
+	    	activity_log('hongbao_jl',1,UID);
+	    	$this->success('红包发放成功，请查看余额！');
+	    }else{
+	    	$this->error('该红包每用户只可以领一次！');
+	    }
+	}
+
+	public function hongbao_list(){
+		$hongbao=M('user')->field('nickname')->where('hongbao=1')->limit(10)->select();
+		if(IS_AJAX){
+			$this->ajaxReturn(array('hongbao' => $hongbao));
+		}else{
+			return $hongbao;
 		}
 	}
 

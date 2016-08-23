@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>支付订单</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="{$web_tplpath}apple-mobile-web-app-capable" content="yes">
+    <meta name="{$web_tplpath}apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <header class="bar bar-nav">
+      <h1 class="title">{$title}</h1>
+    </header>
+    <div class="content wtback">
+      <div class="container-fluid float-left prod-padding">
+      <eq name="pay['order']['code']" value='OK'>
+      <notempty name="pay['order']['pid']">
+      <div class="col-sm-12 prod-padding text-center"><h4><i class="demo-icon icon-ok green"></i> 恭喜您，参与成功！</h4>请等待系统为您揭晓！</div>
+      <else/>
+      <div class="col-sm-12 prod-padding text-center"><h4><i class="demo-icon icon-ok green"></i> 恭喜您，充值成功！</h4></div>
+      </notempty>
+      <else/>
+        <div class="col-sm-12 prod-padding text-center"><h4><i class="demo-icon icon-cancel red"></i>购买失败！</h4>{$pay['order']['msg']}</div>
+      </eq>
+	  <eq name="pay['order']['code']" value='OK'>
+      <div class="col-sm-12 prod-padding"><a href="{:U('index/index')}" class="btn  btn-negative btn-80">继续夺宝</a></div>
+	  <else/>
+	  <div class="col-sm-12 prod-padding"><a href="{:U('shop/index?id='.$pay['order']['pid'])}" class="btn  btn-negative btn-80">重新夺宝</a></div>
+	  </eq>
+      <notempty name="pay['order']['pid']">
+      <div class="col-sm-12 prod-padding"><a href="#navshared" class="btn btn-80 navigate-shared">告诉好友一起来夺宝</a></div>
+      </notempty>
+      </div>
+      <div class="clear-left"></div>
+	  <eq name="pay['order']['code']" value='OK'>
+      <notempty name="pay['order']['pid']">
+      <h6>您成功参与了共<span class="red">{$pay['order']['number']}</span>人次夺宝，信息如下：</h6>
+      <ul class="table-view">
+        <li class="table-view-cell right-no-padding">(第{$pay['shop']['no']}期) {$pay['shop']['name']}</li>
+        <volist name="pay['record']" id="vo">
+        <li class="table-view-cell table-view-divider right-no-padding">
+          夺奖号码：{$vo}<br>
+        </li>
+        </volist>
+      </ul>
+      </notempty>
+	  </eq>
+    </div>
+  <div class="backdrops" id="navshared">
+      <div class="fx">
+          <img src="{$web_tplpath}images/fx.png">
+      </div>
+  </div>
+  <script src="{$web_tplpath}js/jquery.min.js"></script>
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+  <script src="{$web_tplpath}js/share.js"></script>
+  </body>
+</html>

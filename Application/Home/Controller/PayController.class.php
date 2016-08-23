@@ -6,6 +6,7 @@ use Com\Alipay\AlipaySubmit;
 use Com\Alipay\AlipayNotify;
 use Com\YunPay\YunPay;
 use Com\Paypal\PaypalSubmit;
+use Com\IappPay\IappPay;
 
 class PayController extends WapController {
 
@@ -63,6 +64,13 @@ class PayController extends WapController {
       }
       $this->display($this->tplpath."pay_result.html");
     }
+  }
+
+  public function pay_result_app($transdata){
+    $arr=json_decode($transdata);
+    echo "<script language=\"javascript\">";
+    echo "window.onload=function(){window.parent.postMessage('".$arr->cporderid."','*');}";
+    echo "</script>";
   }
 
   public function recharge(){
@@ -125,9 +133,23 @@ class PayController extends WapController {
     $options['out_trade_no'] = $sn;
     $options['total_fee'] = $price;
     $options['notify_url'] = C('WEB_URL').U('Home/Api/pay_weixin_notify');
-    $options['trade_type'] = 'NATIVE';
+    if(is_weixin()){
+      $options['trade_type'] = 'JSAPI';
+      $options['openid'] = session('openid');
+    }else{
+      $options['trade_type'] = 'NATIVE';
+    }
     $auth = new WechatAuth(C('WX_APPID'), C('WX_APPSECRET'));
     $rmsg=$auth->unifiedOrder($options);
+    if(is_weixin() || is_mobile()){
+      $time = NOW_TIME;
+      $jsApiObj["appId"] = C('WX_APPID');
+      $jsApiObj["timeStamp"] = "$time";
+      $jsApiObj["nonceStr"] = $auth->getNonceStr();
+      $jsApiObj["package"] = "prepay_id=".$rmsg['prepay_id'];
+      $jsApiObj["signType"] = "MD5";
+      $jsApiObj["paySign"] = $auth->MakeSign($jsApiObj,C('WX_PAY_KEY'));
+    }
     $this->success(array(
       'return_msg'=>$rmsg['return_msg'],
       'trade_type'=>$rmsg['trade_type'],
@@ -137,6 +159,36 @@ class PayController extends WapController {
       'no'=>$sn,
       'price'=>$price
       ),U('Pay/pay_result?sn='.$sn));
+  }
+
+  public function pay_weixin_app(){
+    $price=$this->pay_check(I('pid'),I('price'));
+    if(!is_numeric($price)){
+      $this->error($price);
+    }
+    $price=$price*100;
+    $sn=$this->create_sn();
+    $options['mch_id'] = C('APP_WX_PAY_MCHID');
+    $options['key'] = C('APP_WX_PAY_KEY');
+    $options['body'] = C("WEB_SITE_TITLE");
+    $options['attach'] = intval(I('pid',0,'intval')).'|'.UID;
+    $options['out_trade_no'] = $sn;
+    $options['total_fee'] = $price;
+    $options['notify_url'] = C('WEB_URL').U('Home/Api/pay_weixin_notify');
+    $options['trade_type'] = 'APP';
+    $auth = new WechatAuth(C('APP_WX_APPID'), C('APP_WX_APPSECRET'));
+    $rmsg=$auth->unifiedOrder($options);
+    $time = NOW_TIME;
+    $ApiObj["appid"] = $rmsg['appid'];
+    $ApiObj["partnerid"] = $rmsg['mch_id'];
+    $ApiObj["prepayid"] = $rmsg['prepay_id'];
+    $ApiObj["package"] = 'Sign=WXPay';
+    $ApiObj["noncestr"] = $auth->getNonceStr();
+    $ApiObj["timestamp"] = "$time";
+    $ApiObj["sign"] = $auth->MakeSign($ApiObj,C('APP_WX_PAY_KEY'));
+    $ApiObj['return_code'] = $rmsg['return_code'];
+    $ApiObj["sn"] = $sn;
+    $this->ajaxReturn($ApiObj);
   }
 
   public function pay_bank(){
@@ -157,7 +209,7 @@ class PayController extends WapController {
     echo $html_text;
   }
 
-  public function pay_alipay($price){
+  public function pay_alipay(){
     $price=$this->pay_check(I('pid'),I('price'));
     if(!is_numeric($price)){
       $this->error($price);
@@ -187,11 +239,46 @@ class PayController extends WapController {
         "exter_invoke_ip" => get_client_ip(),
         "_input_charset"  => trim(strtolower($alipay_config['input_charset']))
     );
-    $parameter["service"] = "create_direct_pay_by_user";
-    $parameter["seller_email"] = trim($alipay_config['seller_email']);
+    if(is_mobile()){
+      $parameter["service"] = "alipay.wap.create.direct.pay.by.user";
+      $parameter["seller_id"] = trim($alipay_config['partner']);
+    }else{
+      $parameter["service"] = "create_direct_pay_by_user";
+      $parameter["seller_email"] = trim($alipay_config['seller_email']);
+    }
     $alipaySubmit = new AlipaySubmit($alipay_config);
     $html_text = $alipaySubmit->buildRequestForm($parameter,"post", "确认");
     echo $html_text;
+  }
+
+  public function pay_alipay_app(){
+    $price=$this->pay_check(I('pid'),I('price'));
+    if(!is_numeric($price)){
+      $this->error($price);
+    }
+    $sn=$this->create_sn();
+    $parameter = array(
+        "partner"   => C('APP_ALI_PAY_PARTNER'),
+        "seller_email"  => C('APP_ALI_PAY_SELLER_EMAIL'),
+        "key"     => C('APP_ALI_PAY_KEY'),
+        "notify_url"  => C('WEB_URL').U('Home/Api/pay_alipay_notify_app'), //返回地址
+        "out_trade_no"  => $sn,
+        "price" => $price,
+        "body"  => C("WEB_SITE_TITLE")
+    );
+    $data= array(
+      "uid"=>UID,
+      "pid"=>intval(I('pid')),
+      "create_time"=>NOW_TIME,
+      "number"=>$price,
+      "order_id"=>$sn,
+      "type"=>3,
+      "msg"=>'等待支付',
+      "code"=>'FAIL',
+
+    );
+    M('shop_order')->add($data);
+    $this->ajaxReturn($parameter);
   }
 
   public function pay_alipay_notify(){
@@ -240,7 +327,6 @@ class PayController extends WapController {
       "type"=>5,
       "msg"=>'等待支付',
       "code"=>'FAIL',
-
     );
     M('shop_order')->add($data);
     $yunpay = new YunPay(C('YUN_PAY_ID'),C('YUN_PAY_KEY'),C('YUN_PAY_EMAIL'));
@@ -258,17 +344,66 @@ class PayController extends WapController {
         "cmd" => '_xclick',
         "business"  => C('PAY_PAL'),
         "item_name" => I('name'),
-        "currency_code" => 'USD',
         "amount" => sprintf("%.2f", $price),
-        "notify_url"  => C('WEB_URL').U('Home/Api/pay_paypal_notify'), 
+        "currency_code" => 'USD',
         "return"  => C('WEB_URL').U('Pay/pay_result?sn='.$sn), //返回地址
         "invoice"  => $sn,
-        "custom" => intval(I('pid')).'|'.UID,
-        "lc" => 'CN'
+        "charset" => "utf-8",
+        "no_shipping" => 1,
+        "no_note" => '',
+        "notify_url"  => C('WEB_URL').U('Home/Api/pay_paypal_notify'),
+        "rm" => 2,
+        "cancel_return" => C('WEB_URL'),
+        "custom" => intval(I('pid')).'|'.UID
     );
     $paypalSubmit = new PaypalSubmit();
     $html_text = $paypalSubmit->buildRequestForm($parameter);
     echo $html_text;
+  }
+
+  public function pay_iapp($type='web'){
+    $price=$this->pay_check(I('pid'),I('price'));
+    if(!is_numeric($price)){
+      $this->error($price);
+    }
+    $sn=$this->create_sn();
+    $parameter = array(
+      "appid" => C('IAPP_PAY_APPID'),
+      "waresid"  => 1,
+      "waresname" =>I('name'),
+      "cporderid"  => $sn,
+      "price" => $price,
+      "currency"  => 'RMB',
+      "appuserid" => C('IAPP_PAY_APPID'),
+      "cpprivateinfo" => intval(I('pid')).'|'.UID,
+      "notifyurl" => C('WEB_URL').U('Home/Api/pay_iapp_notify')
+    );
+    $IappPay = new IappPay();
+    $reqData = $IappPay->composeReq($parameter);
+    $respData = $IappPay->request_by_curl($reqData, 'order test');
+    if($IappPay->parseResp($respData, $respJson)){
+      $orderReq['transid'] = $respJson->transid;
+      if($type=='app'){
+        $orderReq['redirecturl'] = C('WEB_URL').U('Pay/pay_result_app');
+      }else{
+        $orderReq['redirecturl'] = C('WEB_URL').U('Pay/pay_result?sn='.$sn);
+      }
+      $orderReq['cpurl'] = '';
+      $reqData = $IappPay->composeReq($orderReq);
+      $h5url="https://web.iapppay.com/h5/exbegpay?";
+      $pcurl="https://web.iapppay.com/pc/exbegpay?";
+      if($type=='web'){
+        echo "<script language=\"javascript\">";
+        echo "location.href=\"$pcurl$reqData\"";
+        echo "</script>";
+      }elseif($type=='app'){
+        $this->ajaxReturn(array('url'=>$h5url.$reqData));
+      }else{
+        echo "<script language=\"javascript\">";
+        echo "location.href=\"$h5url$reqData\"";
+        echo "</script>";
+      }
+    }
   }
 
   public function pay_yunpay_notify(){

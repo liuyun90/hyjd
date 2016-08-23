@@ -79,7 +79,7 @@ class UserController extends WapController{
         $this->error('手机验证失败！');
       }
       if(M('user')->where(array('id'=>UID))->setField('phone',I('phone'))){
-        $this->success('手机绑定成功！');
+        $this->success('手机绑定成功！',U('user/index'));
       }else{
         $this->error('手机绑定失败！');
       }
@@ -115,8 +115,9 @@ class UserController extends WapController{
   	if(IS_AJAX){
    		$this->ajaxReturn($displays);
    	}else{
+      $this->assign('is_weixin',is_weixin());
    		$this->assign('displays',$displays);
-      	$this->display($this->tplpath."displays.html");
+      $this->display($this->tplpath."displays.html");
    	}		
   }
 

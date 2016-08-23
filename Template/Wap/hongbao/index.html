@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>春季会员大回馈 - {$web_title}</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<style type="text/css">
+		body,div,p,span,ul,li,h1,dl,dt,a {margin:0 auto;padding:0;}
+		body {background:#E23C3C;font-family: 'Microsoft YaHei'}
+		.hbtopa,.hbtopb {max-width: 980px;min-width: 320px;}
+		.hbtopa img,.hbtopb img {display: block;width: 100%;}
+		.hbtop {background: #6FD8F5;}
+		.hbtops {background: #E23C3C;}
+		h1 {display: block;font-size: 1.5em;color:#FBDE57;text-align: center}
+		ul {display: block;margin-top:20px;}
+		ul li {display: block;font-size: 1em;color:#FBDE57;text-align: center;line-height: 1.8;width: 96%}
+		dl {display: block;max-width: 980px;min-width: 320px;background: rgba(255,255,255,.3);border-radius: 5px;margin-top:15px;margin-bottom: 15px;box-sizing:border-box;padding:10px;}
+		dl dt {display: block;font-size: 1em;color:#FFFFBF;line-height: 1.8;}
+		.fxan {display: block;width: 160px;height: 45px;background: #FCD93F;border-radius: 30px;margin-top: 15px;text-align: center;line-height: 45px;margin-bottom: 15px;}
+		.cenback {position: fixed;background:rgba(0,0,0,.7);top: 0;bottom: 0;left: 0;right: 0;z-index: 9999;display: none;}
+		.fx {position: absolute;right: 0;top: 0;display:block;width: 100%;z-index: 9999;}
+		.fx img {display:block;width: 100%;z-index: 9999;}
+		.winner{list-style:none;height:100px;overflow: hidden;}
+	</style>
+</head>
+<body>
+	<div class="hbtop">
+		<div class="hbtopa">
+			<img src="{$web_tplpath}hongbao/images/hongb1.jpg">
+		</div>
+	</div>
+	<div class="hbtops">
+		<div class="hbtopa">
+			<img src="{$web_tplpath}hongbao/images/hongb2.jpg">
+		</div>
+	</div>
+	<a class="fxan">立即分享朋友圈</a>
+	<dl class="winner" id="win1">
+		<volist name=":R('Activity/hongbao_list')" id="list">
+			<dt>恭喜{$list['nickname']}获得红包</dt>
+		</volist>
+	</dl>
+	<h1>活动说明</h1>
+	<ul>
+		<li>春季会员福利。</li>
+		<li>凡是关注“1元欢乐GO”微信公众号的会员</li>
+		<li>将本页分享到您的朋友圈。即可获得红包</li>
+		<li>分享成功后，红包自动发放到您的微信账号</li>
+	</ul>
+	<div class="cenback">
+		<div class="fx"><img src="{$web_tplpath}turntable/images/fx.png"></div>
+  	</div>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+	$.get("/user/wxshare/").success(function(status){
+		if(status.status){
+			wx.config(status.info);
+		}
+	});
+	wx.ready(function(){
+		var wxshare={
+			title: '{$web_title}分享朋友圈得红包', // 分享标题
+			desc: '1元就买了个腰子6，不信你就往前走，别回头。只要1元，进来了就不后悔，进来了就不上当。大到家用电器，小到针头线脑一律只要1元。1元就能实现梦想，走向人生巅峰迎娶百富美。', // 分享描述
+			link: '{:C("WEB_URL")}', // 分享链接
+			imgUrl: '{$web_url}{$web_tplpath}/hongbao/images/hongbao.jpg', // 分享图标
+			success: function () { 
+				$.ajax("{:U('activity/sendhonbao')}").success(function(data){
+					if(data['return_code']=='SUCCESS'){
+						layer.open({content:'恭喜您获得红包',time: 2});					
+					}else{
+						layer.open({content:'对不这波红包已经发放完毕，请过段时候在来等下一波红包！',time: 2});	
+					}
+					$(".cenback").hide();
+				});
+			},
+			cancel: function(){
+				$(".cenback").hide();
+			}
+		}
+	  wx.onMenuShareTimeline(wxshare);
+	});
+	$('.fxan').click(function(){
+		$(".cenback").show();
+	});
+	setInterval(function(){ 
+		var newList=$('dl :first').clone(true); 
+		$('dl').append(newList);
+		$('dl :first').remove();
+	},800); 
+ 
+</script>
+</body>
+</html>

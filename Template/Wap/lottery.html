@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>夺宝记录</title>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+  <link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body>
+  <header class="bar bar-nav">
+    <a href="javascript:history.back();" class="icon icon-left pull-left"></a>
+    <h1 class="title">中奖记录</h1>
+    <a href="{:U('index/index')}" class="icon icon-home pull-right"></a>
+  </header>
+  <include file="{$web_tplpath}/nav.html" />
+  <div class="content wtback">
+    <div class="scroll">
+      <notempty name="lottery">
+      <div id="lottery" url="{:U('user/lottery')}">
+        <volist name="lottery" id="vo">
+          <ul class="table-view">
+          <li class="table-view-cell right-no-padding">
+            <img class="media-object pull-left cart-img" src="{$vo.pic}">
+            <present name="vo['express_no']"><div class="yfahuo active"></div></present>
+            <div class="media-body">
+            <a href="{$vo['url']}">(第{$vo.no}期) {$vo.name}</a>
+              <p>
+                <small>总需 {$vo.price} 人次</small>
+                <br>
+                本期参与：
+                <span class="red">{$vo.count}</span>
+                人次
+                <br>
+                <span class="red">幸运号码：{$vo.kaijang_num}</span>
+                <br>揭晓时间：{$vo.kaijang_time}
+                <present name="vo['express_no']">
+                <br>物流名称：{$vo.express_name}
+                <br>货运单号：{$vo.express_no}
+                </present>
+                </p>
+              <eq name="vo['shared']" value="1">
+                <a href="{:U('user/shared?pid='.$vo['pid'])}" class="btn btn-positive">
+                  <span class="demo-icon icon-camera-1"></span>
+                  晒单炫耀
+                </a>
+              </eq>
+            </div>
+          </li>
+          </ul>
+        </volist>
+      </div>
+      <else/>
+      <div class="col-sm-12 no-shared">
+        <div class="col-sm-12"><span class="demo-icon icon-paper-plane-2"></span> TA还没有中奖。</div>
+      </div>
+      </notempty>
+    </div>
+  </div>
+<script type="text/javascript">var htmltype='lottery',tplpath='{$web_tplpath}';</script>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/dropload.min.js"></script>
+<script src="{$web_tplpath}js/app.js"></script>
+</body>
+</html>

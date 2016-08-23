@@ -1,0 +1,169 @@
+<extend name="Public/base"/>
+<block name="style">
+	<css href="__STATIC__/face/css/face.css" />
+</block>
+<block name="body">
+<div>
+	<div class="page-head">
+		<h2>素材</h2>
+	</div>
+	<div class="cl-mcont">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="block-flat">
+					<div class="header">
+						<h3 class="hthin">{$meta_title}</h3>
+					</div>
+					<div class="content">
+						<ul class="nav nav-tabs">
+							<li <eq name="type" value="news">class="active"</eq>><a href="{:U('',array('type'=>'news'))}">图文素材</a></li>
+							<li <eq name="type" value="image">class="active"</eq>><a href="{:U('',array('type'=>'image'))}">图片素材</a></li>
+							<li <eq name="type" value="voice">class="active"</eq>><a href="{:U('',array('type'=>'voice'))}">语音素材</a></li>
+							<li <eq name="type" value="video">class="active"</eq>><a href="{:U('',array('type'=>'video'))}">视频素材</a></li>
+						</ul>
+						<div class="spacer-bottom-xs">
+							<div class="row">
+								<div class="col-md-2 pull-right">
+									<eq name="type" value="news">
+										<button class="btn btn-success addmsg" data-url="{:U('Material/addmsg')}">新建图文消息</button>
+										<else/>
+										<input type="file" id="upload_weixin">
+									</eq>
+								</div>
+								<div class="pull-right" id="upload_id" style="width:480px;"> </div>
+							</div>
+						</div>
+						<div class="gallery-cont">
+							<switch name="type">
+								<case value="image">
+									<volist name="list" id="img">
+										<div class="item">
+											<div class="container-fluid wxls white-box">
+												<div class="img"><img src="{$img['media_id']|getImgMedia}" /></div>
+											</div>
+											<div class="wxnn">
+												<a class="ajax-get" href="{:U('del',array('media_id'=>$img['media_id']))}"><i class="fa fa-trash-o"></i></a>
+                                			</div>
+										</div>
+									</volist>
+								</case>
+								<case value="voice">
+									<volist name="list" id="audio">
+										<div class="item wximg">
+											<div class="container-fluid wxls white-box">
+												<div class="img">
+													<div class="col-md-3 audio"><i class="fa fa-rss"></i></div>
+													<div class="col-md-9">
+														<p>{:msubstr(basename($audio["name"]),0,7)}</p>
+														<p>{$audio["update_time"]|time_format=###,'m-d'}</p>
+													</div>
+												</div>
+											</div>
+											<div class="wxnn">
+												<a class="ajax-get" href="{:U('del',array('media_id'=>$audio['media_id']))}"><i class="fa fa-trash-o"></i></a>
+                                			</div>
+										</div>
+									</volist>
+								</case>
+								<case value="news">
+									<volist name="list" id="news">
+										<div class="item" style="width:50%;">
+											<div class="container-fluid wxls white-box">
+												<div class="img container-fluid no-padding">
+													<p>{$news['update_time']|time_format=###,'m月d日'}</p>
+													<volist name="news.content.news_item" id="item">
+														<eq name="i" value="1">
+														<div class="tw">
+															<div class="wxtitle">{$item['title']}</div>
+															<img src="{$item['thumb_media_id']|getImgMedia}" class="img-responsive"> </div>
+														<else/>
+														<div class="wxdtw">
+															<div class="wxtwtitle">
+																<h5>{$item['title']}</h5>
+															</div>
+															<div class="wxtwimg"> <img src="{$item['thumb_media_id']|getImgMedia}" class="img-responsive"> </div>
+														</div>
+														</eq>
+													</volist>
+												</div>
+											</div>
+											<div class="wxnn">
+												<a class="col-md-6" href="{:U('editmsg',array('media_id'=>$news['media_id']))}"><i class="fa fa-pencil"></i></a>
+												<a class="col-md-6 ajax-get" href="{:U('del',array('media_id'=>$news['media_id']))}"><i class="fa fa-trash-o"></i></a>
+                                			</div>
+										</div>
+									</volist>
+								</case>
+								<default />
+								<volist name="list" id="video">
+									<div class="item wximg">
+										<div class="container-fluid wxls white-box">
+											<div class="img">
+												<div class="col-md-3 video"><i class="fa fa-play-circle"></i></div>
+												<div class="col-md-9">
+													<p>{:msubstr($video["name"],0,6)}</p>
+													<p>{$video["update_time"]|time_format=###,'m-d'}</p>
+												</div>
+											</div>
+										</div>
+										<div class="wxnn">
+											<a class="ajax-get" href="{:U('del',array('media_id'=>$video['media_id']))}"><i class="fa fa-trash-o"></i></a>
+                                		</div>
+									</div>
+								</volist>
+							</switch>
+						</div>
+						<div class="text-center spacer">
+								<div class="page">{$_page}</div>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</block>
+<block name="script">
+	<js href="__JS__/masonry.js" />
+	<js href="__STATIC__/uploadify/jquery.uploadify.min.js" />
+	<js href="__JS__/behaviour/weixin.js" />
+	<js href="__JS__/imagesloaded.pkgd.min.js" />
+	<script type="text/javascript">
+$(document).ready(function(){
+	imagesLoaded('.gallery-cont',function(){
+		$('.gallery-cont').masonry({
+			columnWidth: 0,
+			itemSelector: '.item'
+		});	
+	});
+	
+	$("#upload_weixin").uploadify({
+		"height"          : 35,
+		"swf"             : "__STATIC__/uploadify/uploadify.swf",
+		"fileObjName"     : "download",
+		"buttonClass"     : "btn btn-success no-padding",
+		"buttonText"      : "{$typetext}",
+		"queueID"         : "upload_id",
+		"uploader"        : "{:U('uploadweixin',array('type'=>$type,'session_id'=>session_id()))}",
+		"width"           : 100,
+		'removeTimeout'	  : 1,
+		'fileTypeExts'	  : '*.jpg; *.png; *.gif; *.jpeg; *.arm; *.mp3; *.mp4; *.wma; *.wav; *.amr; *.flv; *.avi;',
+		"onUploadSuccess" : uploadPicture,
+		'onFallback' : function() {
+			alert('未检测到兼容版本的Flash.');
+		}
+	});
+	function uploadPicture(file, data){
+		var data = $.parseJSON(data);
+		if(data.status){
+			layer.msg('上传完成', {icon: 1});
+			location.reload();
+		} else {
+			layer.msg(data.info, {icon: 2});
+		}
+	}
+	
+	highlight_subnav('{:U('Material/index')}');
+});
+</script>
+</block>

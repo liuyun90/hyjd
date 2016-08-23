@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>夺宝记录</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+	<link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body class="eee">
+
+	<header class="bar bar-nav">
+		<a href="{:U('user/index')}" class="icon icon-left pull-left"></a>
+		<h1 class="title">夺宝记录</h1>
+		<a href="{:U('index/index')}" class="icon icon-home pull-right"></a>
+	</header>
+	<include file="{$web_tplpath}/nav.html" />
+
+	<!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
+	<div class="content">
+		<div class="segmented-control">
+			<a class="control-item <eq name="Think.get.state" value="">active</eq>
+			" href="{:U('user/records')}">
+		    全部
+			</a>
+			<a class="control-item <eq name="Think.get.state" value="0">active</eq>
+		" href="{:U('user/records?state=0')}">
+		    进行中
+			</a>
+			<a class="control-item <eq name="Think.get.state" value="2">active</eq>
+	" href="{:U('user/records?state=2')}">
+		    已揭晓
+			</a>
+		</div>
+		<div class="card records">
+		<div class="scroll">
+			<notempty name="records">
+			<div class="control-content active" id="records" url="{:U('user/records?state='.I('state'))}">
+				<volist name="records" id="vo">
+					<switch name="vo.state">
+						<case value="3">
+						<ul class="table-view">
+							<li class="table-view-cell"><small>(第{$vo.no}期)</small> {$vo.name}</li>
+							<li class="table-view-divider history-ls">
+								<img class="media-object pull-left cart-img" src="{$vo.pic}">
+								<div class="media-body">
+									<p>
+										<small>总需 {$vo.price} 人次</small>
+										<br>本期参与：<span class="red">{$vo.count}</span>人次
+									</p>
+									<p class="red">产品下架（款项退回账户）</p>
+								</div>
+							</li>
+						</ul>
+						</case>
+						<case value="2">
+						<ul class="table-view">
+							<li class="table-view-cell"><a href="{:U('shop/over?id='.$vo['pid'])}" class="navigate-right"><small>(第{$vo.no}期)</small> {$vo.name}</a></li>
+							<li class="table-view-divider history-ls">
+								<img class="media-object pull-left cart-img" src="{$vo.pic}">
+								<div class="media-body">
+									<p>
+										<small>总需 {$vo.price} 人次</small>
+										<br>
+										本期参与：
+										<span class="red">{$vo.count}</span>
+										人次
+										<small><a href="{$vo.lookurl}">查看号码</a></small>
+										<br>揭晓时间：{$vo.kaijang_time}
+									</p>
+									<span class="label label-fullb">
+										获得者：
+										<a href="{$vo.userurl}">{$vo.user.name}</a>
+										<br>
+										本期参与：
+										<span class="red">{$vo.user.count}</span>
+										人次
+										<br>
+										幸运号码：
+										<span class="red">{$vo.kaijang_num}</span>
+									</span>
+								</div>
+							</li>
+						</ul>
+						</case>
+						<default />
+						<ul class="table-view">
+							<li class="table-view-cell"><a href="{:U('shop/index?id='.$vo['pid'])}" class="navigate-right"><small>(第{$vo.no}期)</small> {$vo.name}</a></li>
+							<li class="table-view-divider history-ls">
+								<img class="media-object pull-left cart-img" src="{$vo.pic}">
+								<div class="media-body">
+									<p>
+										本期参与：
+										<span class="red">{$vo.count}</span>
+										人次
+										<a href="{$vo.lookurl}">查看号码</a>
+									</p>
+									<div class="col-sm-12">
+										<div class="col-sm-12 prod-padding">
+											<div class="progress">
+												<span class="orange" style="width: {$vo.jd}%;"></span>
+											</div>
+										</div>
+										<div class="col-sm-6 prod-padding">总需{$vo.price}人次</div>
+										<div class="col-sm-6 prod-padding text-right">
+											剩余
+											<span class="blue">{$vo['price']-$vo['number']}</span>
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</switch>
+				</volist>
+			</div>
+			<else/>
+				<div class="col-sm-12 no-shared">
+					<div class="col-sm-12"><span class="demo-icon icon-paper-plane-2"></span> 还没有数据。</div>
+				</div>
+			</notempty>
+		</div>
+		</div>
+	</div>
+
+<script type="text/javascript">var htmltype='records',tplpath='{$web_tplpath}';</script>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/dropload.min.js"></script>
+<script src="{$web_tplpath}js/app.js"></script>
+</body>
+</html>

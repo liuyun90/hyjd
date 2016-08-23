@@ -570,7 +570,7 @@ $(function(){
 					    	str += '<p class="people peopleadd"><a href="javascript:()" class="a3">追加参与人次</a></p>';
 						    str += '<div class="ro-goods" style="display: none">';
 							str += '<form action="/pay/index" method="post"><div class="ro-goods-inputs">';
-							str += '<input value="'+field['pid']+'" name="pid" type="hidden"><input type="type" value="1" surplus="'+field['surplus']+'" name="number">';
+							str += '<input value="'+field['pid']+'" name="pid" type="hidden"><input type="type" value="'+field['ten_unit']+'" price="'+field['price']+'" unit="'+field['ten_unit']+'" surplus="'+field['surplus']+'" limit="'+(parseInt(field['ten_restrictions_num'])-parseInt(field['no_count']))+'" name="number">';
 							str += '<a class="ro-jia"><span class="icon icon-minus"></span></a>';
 							str += '<a class="ro-jian"><span class="icon icon-plus"></span></a></div>';
 							str += '<button class="btn btn-red zhuibtn" type="submit">确定</button></div></form>';
@@ -804,7 +804,7 @@ $(function(){
         var price=parseInt($(this).siblings('input[name="number"]').attr('price'));
         if(num>unit){
           $(this).siblings('input[name="number"]').val(num-unit);
-          $('.win_prob').html('<span class="win_txt">获得几率'+changeTwoDecimal_f(num-unit/price*100)+'%<i></i></span>').show();
+          $('.win_prob').html('<span class="win_txt">获得几率'+changeTwoDecimal_f((num-unit)/price*100)+'%<i></i></span>').show();
 			setTimeout(function(){$('.win_prob').fadeOut()},3000)
         }
     });
@@ -838,11 +838,12 @@ $(function(){
 		setTimeout(function(){$('.win_prob').fadeOut()},3000)
 	});
     $('body').on('submit','form',function(){
+    	var unit = parseInt($(this).find('input[name="number"]').attr('unit'));
         var surplus = parseInt($(this).find('input[name="number"]').attr('surplus'));
         var price = parseInt($(this).find('input[name="number"]').val());
         var limit=parseInt($(this).find('input[name="number"]').attr('limit'));
         if(price<1){
-            $(this).find('input[name="number"]').val(1);
+            $(this).find('input[name="number"]').val(unit);
         }
         if(limit>0 && price>limit){
         	$(this).find('input[name="number"]').val(limit);

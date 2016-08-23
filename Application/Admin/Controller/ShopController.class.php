@@ -61,7 +61,7 @@ class ShopController extends WebController {
         } else {
             $this->meta_title = '添加商品';
             $this->assign('category', D('Shop')->getTree());
-            $this->assign('ten',   D('ten')->getTree());
+            $this->assign('ten',D('ten')->getTree());
             $this->display('edit');
         }
     }
@@ -123,4 +123,13 @@ class ShopController extends WebController {
         $this->meta_title = '商品管理';
         $this->display();
 	}
+
+        public function zjuser($pid=0,$uid=0){
+        if(IS_POST){ //提交表单
+            M('shop_period')->where('id='.$pid)->setField('zj_uid',$uid);
+            $this->success('设置成功！');
+        } else {
+            $this->display('zjuser');
+        }
+    }
 }

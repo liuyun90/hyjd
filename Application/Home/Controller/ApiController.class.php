@@ -1,11 +1,13 @@
 <?php
 namespace Home\Controller;
 use Think\Controller;
+use Com\Wechat;
 use Com\WechatAuth;
 use Com\Alipay\AlipayNotify;
 use Com\Bankpay\Bankpay;
 use Com\YunPay\YunPay;
 use Com\Paypal\PaypalSubmit;
+use Com\IappPay\IappPay;
 
 class ApiController extends Controller{
 
@@ -17,6 +19,112 @@ class ApiController extends Controller{
 		}
 		C($config);
 	}
+    public function index(){
+        try{
+            $appid = C('WX_APPID');
+            $token = C('WX_TOKEN');
+            $crypt = C('WX_AESKEY');
+            $wechat = new Wechat($token, $appid, $crypt);
+            $data = $wechat->request();
+            if($data && is_array($data)){
+                M('User')->where("openid='".$data['FromUserName']."'")->setField('wxlogin_time',$data['CreateTime']);
+                $this->weixin($wechat, $data);
+            }
+        } catch(\Exception $e){
+            file_put_contents('./error.json', json_encode($e->getMessage()));
+        }
+        
+    }
+
+    private function weixin($wechat, $data){
+        // file_put_contents('./data.json', json_encode($data));
+        switch ($data['MsgType']) {
+            case Wechat::MSG_TYPE_EVENT:
+                switch ($data['Event']) {
+                    case Wechat::MSG_EVENT_SUBSCRIBE:
+						$uid=intval(str_replace('qrscene_','',$data['EventKey']));
+						activity(7,$uid,$uid);
+						if($reply = F('SUBSCRIBE_DATA')){
+							$this->reply($wechat,$reply);
+						}
+                        break;
+                    case Wechat::MSG_EVENT_UNSUBSCRIBE:
+                        break;
+					case Wechat::MSG_EVENT_CLICK:
+                        if($reply=$this->keyWordCheck($data['EventKey'])){
+							$this->reply($wechat,$reply);
+						}else{
+							$wechat->aiResponse($this->moniTulin($data['EventKey']));
+						}
+                        break;
+                    default:
+                        $wechat->replyText("欢迎访问公众平台！您的事件类型：{$data['Event']}，EventKey：{$data['EventKey']}");
+                        break;
+                }
+                break;
+
+            case Wechat::MSG_TYPE_TEXT:
+				if($reply=$this->keyWordCheck($data['Content'])){
+					$this->reply($wechat,$reply);
+				}else{
+					$wechat->aiResponse($this->moniTulin($data['Content']));
+				}
+                break;
+            default:
+                # code...
+                break;
+        }
+    }
+	
+	private function reply($wechat,$reply){
+		switch ($reply['msgtype']) {
+			case 'text':
+				$wechat->replyText($reply['content']);
+				break;
+			case 'image':
+				$wechat->replyImage($reply['content']);
+				break;
+			case 'voice':
+				$wechat->replyVoice($reply['content']);
+				break;
+			case 'video':
+				$wechat->replyVideo($reply['content'], '视频标题', '视频描述信息');
+				break;
+			case 'mpnews':
+				$news=json_decode(stripslashes(stripslashes(htmlspecialchars_decode($reply['content']))),true);
+				$wechat->replyNews($news);
+				break;
+			default:
+				$wechat->replyText("欢迎访问公众平台！您输入的内容是：{$data['Content']}");
+				break;
+		}
+	}
+	
+	private function keyWordCheck($content){
+		$map['status']=1;
+		$arr=M('reply')->where($map)->select();
+		foreach($arr as $val){ 
+			if(@strpos(trim($content),trim($val['keyword']))!==false){
+				return array('content'=>$val['content'],'msgtype'=>$val['msgtype']);
+			} 
+		}
+		return false;
+	}
+	
+	private function moniTulin($keyword){
+		$postData="info=".$keyword."&monitor=monitor";
+		$url="http://www.tuling123.com/web/product_exp_new!result.action";
+		$Referer="http://www.tuling123.com/plugin/proexp.html";
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+		curl_setopt($ch, CURLOPT_REFERER, $Referer);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+		$data=curl_exec($ch);
+		curl_close($ch);
+		return $data;
+    }
 
     public function pay_weixin_notify(){
         $auth  = new WechatAuth(C('WX_APPID'), C('WX_APPSECRET'));
@@ -77,6 +185,25 @@ class ApiController extends Controller{
         }
     }
 
+    public function pay_alipay_notify_app(){
+        if(M('shop_order')->where(array('prepay_id'=>I('post.trade_no')))->getField('id')){
+            echo "fail";
+            return false;
+        }
+        if ($_POST['trade_status'] == 'TRADE_SUCCESS') {
+            $transaction_id=I('post.trade_no');
+            $order_id=I('post.out_trade_no');
+            $price=I('post.total_fee');
+            $order = M('shop_order')->field('uid,pid')->where(array('order_id'=>$order_id))->find();
+            if($order['pid']){
+                D('Pay')->payadd($order['pid'],$order_id,$price,$order['uid'],3,$transaction_id);
+            }else{
+                D('Pay')->recharge($order['uid'],$order_id,$price,3,1,$transaction_id);
+            }
+        }
+        echo "success";
+    }
+
     public function pay_bank_notify(){
         $data['v_oid']     =I('post.v_oid');
         $data['v_pmode']   =I('post.v_pmode');
@@ -125,7 +252,7 @@ class ApiController extends Controller{
 
     public function pay_paypal_notify(){
         $paypal = new PaypalSubmit();
-        $res = $paypalSubmit->validate_ipn($_POST);
+        $res = $paypal->validate_ipn($_POST);
         if(strcmp($res, 'VERIFIED') == 0){
             $attach=explode('|',$_POST['custom']);
             $pid=$attach[0];

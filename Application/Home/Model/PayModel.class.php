@@ -82,7 +82,7 @@ class PayModel extends Model{
 				$data['msg']='购买成功';
 				$this->shop_order($data);
 				activity(4,$price,$uid);
-				$this->invite_price($uid,$price);
+				$this->invite_price($uid,$price,$id);
 				return $sn;
 			}else{
 				$this->error='您的余额不足请充值';
@@ -93,10 +93,11 @@ class PayModel extends Model{
 				M('User')->where('id='.$uid)->setInc('black',$price);
 				$data['msg']='您购买的数量大于剩余数量了!<br>系统已将购买金额自动充入余额。';
 				$data['recharge']=1;
+				$data['code']='OK';
 			}else{
 				$data['msg']='您购买的数量大于剩余数量了!';
+				$data['code']='FAIL';
 			}
-			$data['code']='FAIL';
 			$this->shop_order($data);
 			$this->error=$data['msg'];
 			return $sn;
@@ -181,8 +182,10 @@ class PayModel extends Model{
   		}
   	}
 
-  	public function invite_price($id,$price){
+  	public function invite_price($id,$price,$pid){
+  		$brokerage=(float)substr(sprintf("%.3f",$price*C('USER_INVITEL')/100),0,-1);
   		$tid=M('user')->where('id='.$id)->getField('tid');
-  		M('user')->where('id='.$tid)->setInc('brokerage',(float)substr(sprintf("%.3f",$price*C('USER_INVITEL')/100),0,-1));
+  		M('user')->where('id='.$tid)->setInc('brokerage',$brokerage);
+  		M('commission_log')->add(array('create_time'=>NOW_TIME,'money'=>$brokerage,'uid'=>$id,'pid'=>$pid,'tid'=>$tid,'number'=>$price));
 	}
 }

@@ -4,24 +4,35 @@ use Think\Model;
 
 class PublicModel extends Model {
 
-	public function login($username, $password){
+	public function login($username, $password, $app){
 		$map = array();
-		if(is_numeric($username)){
-			$map['phone'] = $username;
+		if($app){
+			$map['id'] = $username;
 		}else{
-			$map['username'] = $username;
+			if(is_numeric($username)){
+				$map['phone'] = $username;
+			}else{
+				$map['username'] = $username;
+			}
 		}
 		$map['status'] = 1;
 		$user = M('User')->where($map)->find();
 		if(is_array($user)){
-			if(think_ucenter_md5($password) === $user['password']){
+			if(think_ucenter_md5($password) === $user['password'] && !$app){
 				if($user['activation']>0){
 					$this->autoLogin($user);
 					return array($user['id'],$user['ucid']);
 				}else{
 					return array(-3,$user['ucid']);
 				}
-			} else {
+			} elseif($password === $user['password'] && $app){
+				if($user['activation']>0){
+					$this->autoLogin($user);
+					return array($user['id'],$user['ucid']);
+				}else{
+					return array(-3,$user['ucid']);
+				}
+			} else{
 				return array(-2,$user['ucid']);
 			}
 		} else {

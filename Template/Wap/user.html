@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户中心</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body>
+
+<header class="bar userbar">
+    <a href="{:U('News/index?id=1')}" class="demo-icon icon-bell-1 pull-left"></a>
+</header>
+
+<include file="{$web_tplpath}/nav.html" />
+<div class="content wtback">
+
+    <div class="col-sm-12 userbackground">
+        <div class="col-sm-3 col-sm-push-4 user-imgs">
+            <img src="{$user.headimgurl}" class="user-imgs"></div>
+        <div class="col-sm-12 user-text">{$user.nickname}</div>
+        <div class="col-sm-12 user-text">
+            余额：
+            <span class="yellow">{$user.black}</span>
+            欢乐币
+        </div>
+        <div class="col-sm-8 col-sm-push-2">
+            <a href="{:U('pay/recharge')}" class="btn btn-negative btn-80">充值</a>
+        </div>
+    </div>
+
+    <div class="col-sm-4 user-icon border-bottom right-border">
+        <a href="{:U('user/records')}" class="a1">
+            <span class="demo-icon icon-list-alt"></span>
+            <small>夺宝记录</small>
+        </a>
+    </div>
+    <div class="col-sm-4 user-icon border-bottom right-border">
+        <a href="{:U('user/lottery')}" class="a2">
+            <span class="demo-icon icon-award"></span>
+            <small>中奖记录</small>
+        </a>
+    </div>
+    <div class="col-sm-4 user-icon border-bottom">
+        <a href="{:U('user/displays?uid='.session('user_auth')['uid'])}" class="a3">
+            <span class="demo-icon icon-camera-1"></span>
+            <small>我的晒单</small>
+        </a>
+    </div>
+    <div class="col-sm-4 user-icon border-bottom right-border">
+        <a href="{:U('user/address')}" class="a4">
+            <span class="demo-icon icon-location-3"></span>
+            <small>地址管理</small>
+        </a>
+    </div>
+    <div class="col-sm-4 user-icon border-bottom right-border">
+        <a href="{:U('user/recharge_list')}" class="a5">
+            <span class="demo-icon icon-money"></span>
+            <small>充值记录</small>
+        </a>
+    </div>
+    <empty name="user['phone']">
+    <div class="col-sm-4 user-icon border-bottom">
+        <a href="{:U('user/bing_phone')}" class="a6">
+            <span class="demo-icon icon-pin"></span>
+            <small>绑定手机</small>
+        </a>
+    </div>
+    </empty>
+    <div class="col-sm-4 user-icon border-bottom right-border">
+        <a href="{:U('user/tpl/type/friend')}" class="a7">
+            <span class="demo-icon icon-vcard"></span>
+            <small>邀请记录</small>
+        </a>
+    </div>
+</div>
+</body>
+</html>

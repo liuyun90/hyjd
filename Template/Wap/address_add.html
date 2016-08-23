@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>地址管理</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+    <form action="{:U('user/address_add')}"  class="addads" method="post">
+    <header class="bar bar-nav">
+      <a href="{:U('user/address')}" class="icon icon-left pull-left"></a>
+      <h1 class="title">地址管理</h1>
+      <button class="btn btn-positive pull-right ajax-post" type="submit" target-form="addads">保存</button>
+    </header>
+    <div id="city" class="content wtback">
+        <div class="col-sm-4">收货人姓名</div>
+        <div class="col-sm-8">
+          <input type="text" name="nickname" value="{$info['nickname']?$info['nickname']:$user['nickname']}" placeholder="收货人姓名">
+        </div>
+        <div class="col-sm-4">手机号码</div>
+        <div class="col-sm-8">
+          <input type="text" name="tel" value="{$info['tel']|default=''}" placeholder="联系您的电话">
+        </div>
+        <div class="col-sm-4">省份</div>
+        <div class="col-sm-8">
+          <select name="province" class="prov">
+          </select>
+        </div>
+        <div class="col-sm-4">城市</div>
+        <div class="col-sm-8">
+          <select name="city" class="city" disabled="disabled">
+          </select>
+        </div>
+        <div class="col-sm-4">地区</div>
+        <div class="col-sm-8">
+          <select name="dist" class="dist" disabled="disabled">  
+          </select>
+        </div>
+        <div class="col-sm-4">详细地址</div>
+        <div class="col-sm-8">
+          <input name="address" value="{$info.address|default=''}"  type="text" placeholder="请勿重复填写省市区">
+        </div>
+        <div class="col-sm-4">设为默认</div>
+        <div class="col-sm-8">
+        <div class="toggle <eq name="info['default']" value="1">active</eq>">
+            <div class="toggle-handle"></div>
+            <input name="default" id="default" type="hidden" value="{$info['default']}">
+          </div>
+        </div>
+        <input name="id" type="hidden" value="{$info['id']|default=''}">
+    </div>
+    </form>
+    <script src="{$web_tplpath}js/jquery.min.js"></script>
+    <script src="{$web_tplpath}js/dropload.min.js"></script>
+    <script src="{$web_tplpath}js/app.js"></script>
+    <script src="{$web_tplpath}js/cityselect/jquery.cityselect.js"></script>
+    <script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+    <script src="{$web_tplpath}js/ajax.js"></script>
+    <script src="{$web_tplpath}js/toggles.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $("#city").citySelect({
+          url: "{$web_tplpath}js/cityselect/city.min.js",
+          prov: "{$info['province']?$info['province']:$user['province']}",
+          city: "{$info['city']?$info['city']:$user['city']}",
+          dist: "{$info['dist']?$info['dist']:''}",
+          nodata: "null"
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>用户中心</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+	<link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body class="eee">
+
+<header class="bar bar-nav">
+	<a href="javascript:history.back();" class="icon icon-left pull-left"></a>
+	<h1 class="title">用户中心</h1>
+	<a href="{:U('Index/index')}" class="icon icon-home pull-right"></a>
+</header>
+
+<div class="content bottom-nopadding">
+	<div class="col-sm-12 userbackground user-her">
+        <div class="col-sm-3 col-sm-push-4 user-imgs">
+            <img src="{$user.headimgurl}" class="user-imgs"></div>
+        <div class="col-sm-12 user-text">{$user.nickname}</div>
+    </div>
+	<div class="segmented-control">
+		<a class="control-item" href="{:U('user/user?id='.$user['id'])}">夺宝记录</a>
+		<a class="control-item" href="{:U('user/user/type/lottery?id='.$user['id'])}">中奖记录</a>
+		<a class="control-item active" href="{:U('user/user/type/displays?id='.$user['id'])}">TA的晒单</a>
+	</div>
+
+	<div class="card records no-padding" style="margin-bottom: 0px">
+		<div class="scroll">
+			<notempty name="displays">
+			<div id="displays" url="{:U('user/displays?uid='.$user['id'])}">
+				<volist name="displays" id="vo">
+					<ul class="table-view">
+					<li class="table-view-divider history-ls">
+						<a href="{$vo['url']}">
+							<img class="media-object pull-left user-img" src="{$vo.img}">
+							<div class="media-body">
+								获 奖 者：{$vo.name}
+								<small class="green">（{$vo.address}）</small>
+								<p>
+									幸运号码：
+									<span class="red">{$vo.no}</span>
+									<br>
+									本期参与：
+									<span class="red">{$vo.count}</span>
+									人次
+								</p>
+								<p>{$vo.content}</p>
+								<volist name="vo.thumbpic" id="pic">
+									<div class="col-sm-3 prod-padding">
+										<div class="up-img-zy">
+											<img src="{$pic}" class="img-circle"></div>
+									</div>
+								</volist>
+							</div>
+						</a>
+					</li>
+					</ul>
+				</volist>
+			</div>
+			<else/>
+			<div class="col-sm-12 no-shared">
+				<div class="col-sm-12"><span class="demo-icon icon-paper-plane-2"></span> TA还没有晒过单。</div>
+			</div>
+			</notempty>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">var htmltype='displays',tplpath='{$web_tplpath}';</script>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/dropload.min.js"></script>
+<script src="{$web_tplpath}js/app.js"></script>
+</body>
+</html>

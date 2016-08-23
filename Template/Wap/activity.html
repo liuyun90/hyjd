@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>活动</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+	<link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body>
+
+	<header class="bar bar-nav">
+      <a href="{:U('index/index')}" class="icon icon-left pull-left" data-transition="slide-out"></a>
+      <h1 class="title">活动</h1>
+    </header>
+
+	<include file="{$web_tplpath}/nav.html" />
+	<div class="content wtback">
+		<volist name="list" id="vo">
+		<ul class="table-view">
+			<li class="table-view-cell">
+				<a href="{:U('activity/activity?id='.$vo['id'])}" class="navigate-right">
+					<span class="media-object pull-left {$vo['icon']}"></span>
+					<div class="media-body">
+						{$vo['title']} <gt name="vo['end_time']" value="$Think.NOW_TIME"><span class="label label-green">在进行</span><else/><span class="label label-red">已过期</span></gt>
+						<p>{:str_replace('欢乐币',$web_currency,$vo['remark'])}</p>
+					</div>
+				</a>
+			</li>
+		</ul>
+		</volist>
+	</div>
+
+</body>
+</html>

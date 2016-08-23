@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>充值</title>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+  <link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body>
+  <header class="bar bar-nav">
+    <a href="javascript:history.back();" class="icon icon-left pull-left" data-transition="slide-out"></a>
+    <h1 class="title">充值</h1>
+  </header>
+  <div class="content wtback">
+  <form action="" method="post">
+    <ul class="table-view top1">
+      <li class="table-view-divider">充值获得欢乐币（1元=1欢乐币），可用于夺宝，充值的款项无法退回。</li>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 padding10">选择充值金额（元）</div>
+          <div class="col-sm-4 prod-padding">
+            <div class="dollar active">10</div>
+          </div>
+          <div class="col-sm-4 prod-padding">
+            <div class="dollar">20</div>
+          </div>
+          <div class="col-sm-4 prod-padding">
+            <div class="dollar">50</div>
+          </div>
+          <div class="col-sm-4 prod-padding">
+            <div class="dollar">100</div>
+          </div>
+          <div class="col-sm-4 prod-padding">
+            <div class="dollar">200</div>
+          </div>
+          <div class="col-sm-4 prod-padding">
+            <div class="dollar not"><input type="number" name="price_ye" min="1" style="border: none;height:auto;" placeholder="其他"></div></div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 padding10">选择支付方式</div>
+        </div>
+      </div>
+      <notempty name="wx_pay">
+      <li class="table-view-cell right-no-padding">
+        <label class="pay-label">
+          <input type="radio" name="pay_type" value="2" checked="checked"/>微信支付</label>
+      </li>
+      </notempty>
+      <if condition="(is_weixin() neq 1) and (ali_pay neq '')">
+      <li class="table-view-cell right-no-padding">
+        <label class="pay-label"><input type="radio" name="pay_type" value="3"/> 支付宝</label>
+      </li>
+      </if>
+      <notempty name="yun_pay">
+      <li class="table-view-cell right-no-padding">
+        <label class="pay-label"><input type="radio" name="pay_type" value="5"/> 云支付</label>
+      </li>
+      </notempty>
+      <notempty name="pay_pal">
+      <li class="table-view-cell right-no-padding">
+        <label class="pay-label"><input type="radio" name="pay_type" value="6"/> PayPal</label>
+      </li>
+      </notempty>
+      <notempty name="iapp_pay">
+      <li class="table-view-cell right-no-padding">
+        <label class="pay-label"><input type="radio" name="pay_type" value="7"/> 爱贝支付</label>
+      </li>
+      </notempty>
+      <li class="prod-padding">
+        <input type="hidden" value="10" name="price">
+        <input value="{$web_title}_充值" name="name" type="hidden">
+        <input value="{:is_weixin()}" name="weixin" type="hidden">
+        <button class="btn btn-negative btn-80 paybut" id="paybut" type="submit">立即充值</button></a>
+      </li>
+    </ul>
+  </form>
+  </div>
+  <script src="{$web_tplpath}js/jquery.min.js"></script>
+  <script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+  <script src="{$web_tplpath}js/pay.js"></script>
+</body>
+</html>

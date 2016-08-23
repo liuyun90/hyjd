@@ -59,9 +59,9 @@ class ShopModel extends Model{
     }
 
     public function adddate($id){
-        $data=D('shop')->info($id,'price,status');
+        $data=D('shop')->info($id,'edit_price,status');
         $no=M('shop_period')->where('sid='.$id)->max('no');
-        $period['jiang_num']=jiang_num($data['price']-1);
+        $period['jiang_num']=jiang_num($data['edit_price']-1);
         $period['sid']=$id;
         $period['create_time']=NOW_TIME;
         $period['state']=0;

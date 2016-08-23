@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>产品详情</title>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+  <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="__JS__/dist/webuploader.css" />
+  <link rel="stylesheet" type="text/css" href="__CSS__/style.css" />
+</head>
+<body>
+
+  <header class="bar bar-nav">
+    <a class="icon icon-left pull-left" href="javascript:history.back();"></a>
+    <h1 class="title">晒单分享</h1>
+  </header>
+
+  <div class="content wtback">
+    <form action="{:U('user/shared')}"  class="addads" method="post">
+      <textarea name="content" rows="5" placeholder="此刻的心情...."></textarea>
+      <div id="uploader">
+        <div class="queueList">
+          <div id="dndArea" class="placeholder">
+            <div id="filePicker">
+              <div class="webuploader-pick">点击选择图片</div>
+            </div>
+            <p>单次最多可选9张</p>
+          </div>
+        </div>
+        <div class="statusBar" style="display:none">
+          <div class="progress">
+            <span class="text">0%</span>
+            <span class="percentage"></span>
+          </div>
+          <div class="info"></div>
+          <div class="btns">
+            <div id="filePicker2" class="webuploader-container"><div class="webuploader-pick">继续添加</div></div>
+            <div class="uploadBtn">开始上传</div>
+          </div>
+        </div>
+      </div>
+      <input name="pid" type="hidden" value="{$Think.get.pid}">
+    <div class="col-sm-12 top10">
+      <button type="submit" class="btn btn-positive btn-block ajax-post" target-form="addads">炫耀分享</button>
+    </div>
+    </form>
+  </div>
+  <script src="{$web_tplpath}js/jquery.min.js"></script>
+  <script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+  <script src="{$web_tplpath}js/ajax.js"></script>
+  <present name="is_weixin">
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="__JS__/uploadwx.js"></script>
+  <else/>
+    <script type="text/javascript" src="__STATIC__/dist/webuploader.js"></script>
+    <script type="text/javascript" src="__STATIC__/upload.js"></script>
+  </present>
+</body>
+</html>

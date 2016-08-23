@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>新手欢迎页</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/explain.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <header class="bar bar-nav">
+      <a class="icon icon-left pull-left" href="{:U('index/index')}"></a>
+      <h1 class="title">欢迎</h1>
+      <a href="{:U('index/index')}" class="icon icon-home pull-right"></a>
+    </header>
+    <div class="content newsbg">
+    	<div class="slider"><img src="{$web_tplpath}images/hdn-top.jpg"></div>
+    	<div class="newbody">
+    		<img src="{$web_tplpath}images/buzou.jpg">
+    	</div>
+        <div class="newbody">
+            <img src="{$web_tplpath}images/qrcode1.jpg" class="qrcode">
+            <img src="{$web_tplpath}images/qrcode.jpg">
+        </div>
+        <div style="display: none;">{:session('uid',I('uid'))}</div>
+    </div>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  <eq name="Subscribe" value="0">
+    layer.open({content:'<img src="{$web_tplpath}images/qrcode1.jpg" height="120" width="120"><p>长按二维码关注</p>',btn: ['我知道了']});
+  </eq>
+    $.get("/user/wxshare/").success(function(status){
+        if(status.status){
+            wx.config(status.info);
+        }
+    });
+    wx.ready(function(){
+        var wxshare={
+            title: '微信零钱除了发红包好可以做这些，你绝对想不到！', // 分享标题
+            desc: '微信零钱除了发红包好可以做这些，你绝对想不到！', // 分享描述
+            link: '{$web_url}{:U("activity/content",array("id"=>57,"uid"=>UID))}', // 分享链接
+            imgUrl: '{$web_url}{$web_tplpath}images/iphone.jpg', // 分享图标
+            success: function(){
+                $(".backdrops").hide();
+            },
+            cancel: function () { 
+                $(".backdrops").hide();
+            }
+        }
+      wx.onMenuShareTimeline(wxshare);
+      wx.onMenuShareAppMessage(wxshare);
+      wx.onMenuShareQQ(wxshare);
+      wx.onMenuShareWeibo(wxshare);
+      wx.onMenuShareQZone(wxshare);
+    });
+});
+</script>
+  </body>
+</html>

@@ -638,7 +638,7 @@ b.pay-nbs {
  * Linder Wang
 **/
 .WHCCB,.DYCCB,.BOGY,.EGB,.JLNX,.LZCB,.NMGNX,.PZHCCB,.SHXNX,.SCNX,.BJRCB,.JSNX,.SXNX,.BOJN,.BOZZ,.YTCB,.BOBD,.WHRCB,
-.HNNX,.BOGL,.ZJTLCB,.BOYK,.SHBANK,.LYCB,.HUNNX,.LNNX,.BOXIA,.GXNX ,.GZNX ,.HBCL ,.TJRCB,.CZCB,.ZJKCCB,.wx,.alipay,.yunpay
+.HNNX,.BOGL,.ZJTLCB,.BOYK,.SHBANK,.LYCB,.HUNNX,.LNNX,.BOXIA,.GXNX ,.GZNX ,.HBCL ,.TJRCB,.CZCB,.ZJKCCB,.wx,.alipay,.yunpay,.iapppay
 {background-image: url(../images/banklogo.gif);position:absolute;top:11px;left:7px;z-index:1;height:26px;width:160px;}
 .WHCCB{background-position: 0 -3185px;}
 .DYCCB{background-position: 0 -3262px;}
@@ -678,6 +678,7 @@ b.pay-nbs {
 .wx {background-position:0 -4458px;}
 .alipay {background-position:0 -4495px;}
 .yunpay {background-position:0 -4529px;}
+.iapppay {background-position:0 -4560px;}
 .paypal {
 	background: url(../images/paypal.png) no-repeat center left;
 	background-size: contain;

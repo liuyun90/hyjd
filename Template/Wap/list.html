@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>{$web_title}</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<load href="{$web_tplpath}css/ratchet.min.css" />
+	<load href="{$web_tplpath}js/swiper/idangerous.swiper.min.css" rel="stylesheet" />
+	<load href="{$web_tplpath}css/app.css" />
+
+<body>
+
+<header class="bar bar-nav">
+	<h1 class="title">{$web_title}</h1>
+</header>
+<include file="{$web_tplpath}/nav.html" />
+
+<div class="content">
+	<div class="container-fluid float-left tabs">
+		<div class="row text-center">
+			<div class="col-sm-4 prod-padding big-class right-border">
+				<span class="icon icon-list"></span> 分类
+				<ul class="show-class">
+					<li><a href="{:U('list/index/')}">全部商品</a></li>
+					<volist name=":R('list/type')" id="vo">
+						<li><a href="{:U('list/index',array('id'=>$vo['id'],'ten'=>I('ten')))}">{$vo['title']}</a></li>
+					</volist>
+				</ul>
+			</div>
+			<div class="col-sm-4 prod-padding big-class right-border">
+				<span class="demo-icon icon-aperture"></span> 专区
+				<ul class="show-class">
+					<volist name=":R('ten/ten')" id="vo">
+						<li><a href="{:U('list/index',array('ten'=>$vo['id']))}">{$vo['title']}</a></li>
+					</volist>
+				</ul>
+			</div>
+			<div class="col-sm-4 prod-padding big-class">
+				<span class="demo-icon icon-params"></span> 筛选
+				<ul class="show-class">
+					<li><a href="{:U('list/index',array('id'=>I('id'),'ten'=>I('ten'),'order'=>'shop:hits|desc'))}">人气商品</a></li>
+		  			<li><a href="{:U('list/index',array('id'=>I('id'),'ten'=>I('ten'),'order'=>'period:number%shop:price*100|desc'))}">剩余人次</a></li>
+		  			<li><a href="{:U('list/index',array('id'=>I('id'),'ten'=>I('ten'),'order'=>'id|desc'))}">最新商品</a></li>
+		  			<li><a href="{:U('list/index',array('id'=>I('id'),'ten'=>I('ten'),'order'=>'shop:price|desc'))}">总需人次 <span class="icon icon-up-nav"></span></a></li>
+		  			<li><a href="{:U('list/index',array('id'=>I('id'),'ten'=>I('ten'),'order'=>'shop:price|asc'))}">总需人次 <span class="icon icon-down-nav"></span></a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid float-left scroll">
+		<div class="row">
+			<notempty name="shop">
+				<div id="shop" url="{:U('list/index',array('id'=>I('id'),'ten'=>I('ten'),'order'=>I('order')))}">
+				<volist name="shop" id='vo'>
+					<div class="col-sm-6 top-border rg-padding">
+						<notempty name="vo['ten_name']"><div class="zhuanq">{$vo['ten_name']}</div></notempty>
+						<eq name="vo['ten_restrictions']" value="1"><span class="flag">限购{$vo['ten_restrictions_num']}人次</span></eq>
+						<a href="{$vo.url}">
+							<div class="col-sm-12 prod-padding img-hidden">
+								<img src="{$vo.pic}" class="img-circle"></div>
+							<div class="col-sm-12 prod-padding pro-name">{$vo.name}</div>
+							<div class="col-sm-7 prod-padding">
+								<small>进度<span class="blue">{$vo.jd}%</span></small>
+								<div class="progress">
+									<span class="orange" style="width: {$vo.jd}%;"></span>
+								</div>
+							</div>
+						</a>
+						<div class="col-sm-5">
+							<a href="{$vo.url}" class="btn btn-negative btn-outlined btn-index">马上参与</a>
+						</div>
+					</div>
+				</volist>
+				</div>
+				<div class="clear-left"></div>
+			<else/>
+				<div class="col-sm-12 no-shared">
+					<div class="col-sm-12">
+						<span class="demo-icon icon-paper-plane-2"></span>
+						TA还没有晒过单。
+					</div>
+				</div>
+			</notempty>
+		</div>
+	</div>
+</div>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/dropload.min.js"></script>
+<script type="text/javascript">var htmltype='shop',tplpath='{$web_tplpath}';</script>
+<script src="{$web_tplpath}js/app.js"></script>
+<script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	$(".big-class").click(function(){
+		$(this).children('.show-class').toggle();
+		$(this).siblings('.big-class').children('.show-class').hide();
+		$(this).children('.demo-icon').toggleClass("color");
+		$(this).siblings('.big-class').children('.demo-icon').removeClass("color");
+    });
+    $.get("/user/wxshare/").success(function(status){
+        if(status.status){
+            wx.config(status.info);
+        }
+    });
+    wx.ready(function(){
+        var wxshare={
+            title: '微信零钱除了发红包好可以做这些，你绝对想不到！', // 分享标题
+            desc: '微信零钱除了发红包好可以做这些，你绝对想不到！', // 分享描述
+            link: '{:C("WEB_URL")}{:U("activity/content",array("id"=>57,"uid"=>UID))}', // 分享链接
+            imgUrl: '{:C("WEB_URL")}{$web_tplpath}images/iphone.jpg', // 分享图标
+            success: function(){
+                $(".backdrops").hide();
+            },
+            cancel: function () { 
+                $(".backdrops").hide();
+            }
+        }
+      wx.onMenuShareTimeline(wxshare);
+      wx.onMenuShareAppMessage(wxshare);
+      wx.onMenuShareQQ(wxshare);
+      wx.onMenuShareWeibo(wxshare);
+      wx.onMenuShareQZone(wxshare);
+    });
+    $(window).scroll(function () {
+		var srollPos = $(window).scrollTop();
+		var windowHeight = $(window).height(); //窗口的高度
+		var dbHiht = $("body").height(); //整个页面文件的高度
+		if (srollPos > 207) {
+			$('.tabs').addClass('nav-fixed');
+		}else{
+			$('.tabs').removeClass('nav-fixed');
+		}
+	});
+});
+</script>
+</body>
+</html>

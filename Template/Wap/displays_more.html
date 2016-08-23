@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>晒单分享</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="bar bar-nav">
+      <a href="javascript:history.back();" class="icon icon-left pull-left" data-transition="slide-out"></a>
+      <h1 class="title">晒单分享</h1>
+      <a class="demo-icon icon-share pull-right" id="btn-block"></a>
+    </header>
+
+    <include file="{$web_tplpath}/nav.html" />
+    <div class="content">
+    	<div class="container-fluid float-left">
+    		<div class="col-sm-12 prod-padding"><a href="#">{$name}</a></div>
+	        <p>
+	        	开奖时间：{$time}<br>
+	        	幸运号码：<span class="red">{$no}</span><br>
+	        	本期参与：<span class="red">{$count}</span>人次
+	        </p>
+	        <p>{:str_replace(C("WEB_SITE_TITLE"),$web_title,$content)}</p>
+	        <div class="col-sm-12 prod-padding">
+            <volist name="pic" id="imgpic">
+	        	<img src="{$imgpic}" class="img-circle">
+            </volist>
+	        </div>
+    	</div>
+    </div>
+
+    <div class="backdrops" id="navshared">
+        <div class="fx">
+            <img src="{$web_tplpath}images/fx.png">
+        </div>
+    </div>
+  <script src="{$web_tplpath}js/jquery.min.js"></script>
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+  <script type="text/javascript">
+    $("#btn-block").click(function(){
+      $(".backdrops").show();
+    });
+    $(".backdrops").click(function(){
+      $(".backdrops").hide();
+    });
+    $.get("/user/wxshare/").success(function(status){
+      if(status.status){
+        wx.config(status.info);
+      }
+    });
+    wx.ready(function(){
+      var wxshare={
+        title: '欢乐分享', // 分享标题
+        desc: '{$content}', // 分享描述
+        link: '{$web_url}{:U("activity/content",array("id"=>57,"uid"=>UID))}', // 分享链接
+        imgUrl: '{$web_url}{$pic[0]}', // 分享图标
+        success: function(){
+            $(".backdrops").hide();
+        },
+        cancel: function () { 
+            $(".backdrops").hide();
+        }
+      }
+      wx.onMenuShareTimeline(wxshare);
+      wx.onMenuShareAppMessage(wxshare);
+      wx.onMenuShareQQ(wxshare);
+      wx.onMenuShareWeibo(wxshare);
+      wx.onMenuShareQZone(wxshare);
+    });
+  </script>
+  </body>
+</html>

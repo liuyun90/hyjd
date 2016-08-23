@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{$web_title}</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+  </head>
+  <body>
+    <header class="bar bar-nav login-bar">
+      <a href="{:U('index/index')}" class="icon icon-left pull-left"></a> 
+    </header>
+    <div class="content loginback login-background">
+    	<div class="login-user-img">
+    		<img src="{$web_tplpath}images/loginuser.jpg">
+    	</div>
+    	<h5 class="login-title">用户验证</h5>
+		<form method="post" action="{:U('public/phone')}" class="form-user" class="form-user">
+      <div class="login input-group">
+        <input type="text" name="username" value="{:session('username')}" placeholder="手机号" disabled="disabled"/>
+        <input type="hidden" name="uid" value="{$uid}">
+        <input type="text" class="yzmin" placeholder="验证码" name="code">
+        <div class="yanzimg"><button id="sendcode" class="btn btn-green" type="button">获取激活码</button></div>
+      </div>
+
+      <button class="btn btn-primary login-btn btn-block ajax-post" type="submit" target-form="form-user">提交</button>
+    </form>
+    </div>
+
+  <script src="{$web_tplpath}js/jquery.min.js"></script>
+  <script type="text/javascript">var tplpath='{$web_tplpath}'</script>
+	<script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+	<script src="{$web_tplpath}js/ajax.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var i = 120;
+      var intervalid;
+      $("#sendcode").click(function(event) {
+        $.get("{:U('public/sendcode')}").success(function(data){
+            $(this).attr({"disabled":"true"});
+            intervalid = setInterval("codefun()", 1000);
+        });
+      });
+      codefun=function(){
+          if (i == 0){
+              $("#sendcode").removeAttr("disabled");
+              clearInterval(intervalid);
+          }
+          $('#sendcode').html(i+"秒后重获");
+          i--;
+      }
+    })
+  </script>
+  </body>
+</html>

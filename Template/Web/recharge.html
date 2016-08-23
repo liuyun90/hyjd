@@ -66,6 +66,16 @@
 				        			<span class="yunpay" data-paytype="5"></span>
 				        		</label>
 				        		</notempty>
+				        		<notempty name="pay_pal">
+				        		<label class="pay-label" title="PAYPAL支付">
+				        			<span class="paypal" data-paytype="6"></span>
+				        		</label>
+				        		</notempty>
+				        		<notempty name="iapp_pay">
+				        		<label class="pay-label" title="爱贝支付">
+				        			<span class="iapppal" data-paytype="7"></span>
+				        		</label>
+				        		</notempty>
 				        	</div>
 				        	<notempty name="band_pay">
 				        	<div class="pay-nav">
@@ -244,6 +254,7 @@
 	            </tr>
 	        </tbody>
 	    </table>
+	    <input value="{:is_weixin()}" name="weixin" type="hidden">
 	    <input value="{$web_title}_充值" name="name" type="hidden">
 	    <input value="10" name="price" type="hidden">
 	    </form>

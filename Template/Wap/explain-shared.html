@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>分享晒单</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/app.css" rel="stylesheet">
+    <link href="{$web_tplpath}css/explain.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <header class="bar bar-nav">
+      <a class="icon icon-left pull-left" href="javascript:history.back();"></a>
+      <h1 class="title">分享晒单</h1>
+    </header>
+
+    <div class="content sf-explain">
+    	<div class="slider"><img src="___EXPLAIN__/2/56550e6125ecb.jpg"></div>
+    	<div class="sd-explain sf-neiback">
+            <img src="{$web_tplpath}images/wanwan2.png" class="topimgs">
+    		<h4><span class="demo-icon icon-info-circled"></span> 晒单我就发红包！</h4>
+    		<div class="explain-news">
+    			<img src="___EXPLAIN__/2/shared-explain.jpg">
+    			<span><b>欢乐君毅然决定：</b></span>
+    			<h5>若你中奖！并且晒单！即可获得1{$web_currency}！</h5>
+    			<span><i class="dian">◉</i> 即日起，凡参与夺宝中奖，并晒单。即可获得1{$web_currency}！</span>
+    			<br>
+    			<a class="btn btn-negative btn-block" href="{:U('index/index')}">立刻夺宝</a>
+    		</div>
+    	</div>
+
+        <ul class="table-view">
+            <li class="table-view-cell right-no-padding blue">
+                <span class="demo-icon icon-bell-1"></span> 奖励记录
+            </li>
+            <volist name="list_log" id="list">
+            <li class="table-view-cell right-no-padding">
+                {:time_format($list['create_time'])} 您发布了晒单，获得 <span class="red">{$list['price']}</span> {$web_currency}。已冲入您的账户，请注意查收。
+            </li>
+            </volist>
+        </ul>
+		
+    </div>
+
+  </body>
+</html>

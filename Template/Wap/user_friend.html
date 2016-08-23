@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>夺宝记录</title>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link href="{$web_tplpath}css/ratchet.min.css" rel="stylesheet">
+	<link href="{$web_tplpath}css/app.css" rel="stylesheet"></head>
+<body>
+	<header class="bar bar-nav">
+		<a href="{:U('user/index')}" class="icon icon-left pull-left"></a>
+		<h1 class="title">邀请记录</h1>
+		<a href="{:U('index/index')}" class="icon icon-home pull-right"></a>
+	</header>
+	<include file="{$web_tplpath}/nav.html" />
+	<!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
+	<div class="content history-ls">
+		<div class="segmented-control">
+			<a class="control-item active" href="javascript:void(0)">邀请好友</a>
+			<a class="control-item" href="javascript:void(0)">佣金明细</a>
+			<a class="control-item" href="javascript:void(0)">提现申请</a>
+			<a class="control-item" href="javascript:void(0)">提现记录</a>
+		</div>
+		<div class="scroll">
+			<div style="display: none">
+				<button class="btn btn-negative btn-80 margin-bottom top10 btn-block">立即分享</button>
+				<ul class="table-view" id="invite" url="{:U('user/invite')}"></ul>
+			</div>
+			<div id="money" style="display: none">
+				<div class="clear-left"></div>
+				<div class="table-view-divider">
+					累计收入：<span class="red">{$user['brokerage']+$user['withdraw_brokerage']}元</span><br>
+					累计(提现/充值)：<span class="red">{$user['withdraw_brokerage']}元</span><br>
+					佣金余额：<span class="red">{$user['brokerage']}元</span><br>
+					佣金余额可实时充值到您的帐户，满<span class="red">100元</span>时才可申请提现。
+				</div>
+				<ul class="table-view" id='commission' url="{:U('user/commission')}">
+				</ul>
+			</div>
+			<div id="moneyform" style="display: none">
+				<button class="btn btn-80 btn-negative margin-bottom top10 czbtn">充值到我的账户</button>
+				<div class="clear-left"></div>
+				<ul class="table-view">
+					<li class="table-view-divider">
+						佣金余额：<span class="red">{$user['brokerage']}元</span><br>
+						佣金余额可实时充值到您的帐户，满<span class="red">100元</span>时才可申请提现。
+					</li>
+					<div class="mentiondiv">
+						<div>
+							<form action="{:U('user/mention')}" class="addads form-mention" method="post">
+							<div class="col-sm-4">提现金额</div>
+							<div class="col-sm-8">
+					          <input type="text" name="money" id="withraw-money" value="" placeholder="申请提现金额">
+					        </div>
+							<div class="col-sm-4">手机号码</div>
+							<div class="col-sm-8">
+					          <input type="text" name="phone" id="withraw-phone" value="" placeholder="如：138****678">
+					        </div>
+							<div class="col-sm-4">开户人</div>
+							<div class="col-sm-8">
+					          <input type="text" name="account" id="withraw-account" value="" placeholder="姓名 如：张三">
+					        </div>
+							<div class="col-sm-4">银行名称</div>
+							<div class="col-sm-8">
+					          <input type="text" name="bank" id="withraw-bank" value="" placeholder="银行 如：中国工商银行">
+					        </div>
+							<div class="col-sm-4">开户支行</div>
+							<div class="col-sm-8">
+					          <input type="text" name="branch" id="withraw-branch" value="" placeholder="需具体到省市">
+					        </div>
+							<div class="col-sm-4">银行帐号</div>
+							<div class="col-sm-8">
+					          <input type="text" name="bank_number" id="withraw-bank_number" value="" placeholder="如：1234 5618 1234 5678 123">
+					        </div>
+					        <div class="col-sm-12">
+					        	<button class="mention btn btn-80 btn-negative margin-bottom ajax-post" target-form="form-mention" type="submit">申请提现</button>
+					        </div>
+					    	</form>
+				    	</div>
+				    	<div style="display: none;">
+				    		<form action="{:U('user/mention')}" class="addads form-mentionc" method="post">
+				    		<div class="col-sm-4">提现金额</div>
+							<div class="col-sm-8">
+					          <input type="text" name="money" id="withraw-money" value="" placeholder="充值金额">
+					        </div>
+					        <div class="col-sm-12">
+					        	<input type="hidden" name="type" value="1">
+					        	<button class="btn btn-80 btn-negative margin-bottom ajax-post" target-form="form-mentionc" type="submit">充值</button>
+					        </div>
+					    	</form>
+				    	</div>
+			    	</div>
+				</ul>
+			</div>
+			<div id="list" style="display: none">
+				<div class="clear-left"></div>
+				<ul class="table-view" id='mention_list' url="{:U('user/mention_list')}">
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="backdrops" id="navshared">
+        <div class="fx">
+            <img src="{$web_tplpath}images/fx.png">
+        </div>
+    </div>
+<script type="text/javascript">var htmltype='invite',tplpath='{$web_tplpath}',page=1;</script>
+<script src="{$web_tplpath}js/jquery.min.js"></script>
+<script src="{$web_tplpath}js/dropload.min.js"></script>
+<script src="{$web_tplpath}js/layer.m/layer.m.js"></script>
+<script src="{$web_tplpath}js/ajax.js"></script>
+<script src="{$web_tplpath}js/app.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.czbtn').click(function(event) {
+			if($(this).text()=='申请提现'){
+				$(this).text('充值到我的账户');
+			}else{
+				$(this).text('申请提现');
+			}
+			$('.mentiondiv').children().toggle();
+		});
+		$('.mention').click(function(event){
+            var money=$('#withraw-money').val();
+            if(money.length==0){
+                layer.open({content: '请填写提现金额！',time: 2});
+                return false;
+            }
+            if(money%100!=0){
+            	layer.open({content: '提现金额只能是整百！',time: 2});
+                return false;
+            }
+            if($('#withraw-account').val().length==0){
+            	layer.open({content: '请填写开户人！',time: 2});
+                return false;
+            }
+            if($('#withraw-bank').val().length==0){
+                layer.open({content: '请填写银行名称！',time: 2});
+                return false;
+            }
+            if($('#withraw-bank_number').val().length==0){
+            	layer.open({content: '请填写银行帐号！',time: 2});
+                return false;
+            }
+            if($('#withraw-phone').val().length==0){
+                layer.open({content: '请填写联系电话！',time: 2});
+                return false;
+            }
+            $('.ajax-post').trigger("click");
+        });
+        $(".btn-block").click(function(){
+            $(".backdrops").show();
+        });
+        $(".backdrops").click(function(){
+            $(".backdrops").hide();
+        });
+        $.get("/user/wxshare/").success(function(status){
+            if(status.status){
+                wx.config(status.info);
+            }
+        });
+        wx.ready(function(){
+            var wxshare={
+                title: '1元就买了个腰子6，不信你就往前走，别回头。只要1元，进来了就不后悔，进来了就不上当。大到家用电器，小到针头线脑一律只要1元。1元就能实现梦想，走向人生巅峰迎娶百富美。', // 分享标题
+                desc: '1元就买了个腰子6，不信你就往前走，别回头。只要1元，进来了就不后悔，进来了就不上当。大到家用电器，小到针头线脑一律只要1元。1元就能实现梦想，走向人生巅峰迎娶百富美。', // 分享描述
+                link: '{$web_url}{:U("activity/content",array("id"=>57,"uid"=>UID))}', // 分享链接
+                imgUrl: '{$web_url}{$web_tplpath}images/iphone.jpg', // 分享图标
+                success: function(){
+                    $(".backdrops").hide();
+                },
+                cancel: function () { 
+                    $(".backdrops").hide();
+                }
+            }
+          wx.onMenuShareTimeline(wxshare);
+          wx.onMenuShareAppMessage(wxshare);
+          wx.onMenuShareQQ(wxshare);
+          wx.onMenuShareWeibo(wxshare);
+          wx.onMenuShareQZone(wxshare);
+        });
+    });
+</script>
+</body>
+</html>
