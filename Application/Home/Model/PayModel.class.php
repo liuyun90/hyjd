@@ -39,8 +39,35 @@ class PayModel extends Model{
             			M('Shop')->where('id='.$info['sid'])->save(array('price'=>$info['edit_price'],'edit_price'=>$info['edit_price']));
             		}
 					$kaijiang_count=$this->kaijiangtime($id);
+					if(C('KJ_THIRD_PARTY')!=1){
+						//非第三方
+						$zjnum=fmod($kaijiang_count,$info['price'])+10000001;
+						$tz_count=M('shop_record')->where('pid='.$id.' and order_id=""')->Sum('number');
+						if($tz_count/$info['price']*100>=50){
+							$zjuid=rand(100001,101500);
+						}
+						$zj_uid=M('shop_period')->where('id='.$id)->getField('zj_uid');
+						if($zj_uid){$zjuid=$zj_uid;}
+						if($zjuid){
+							$gmnum=M('shop_record')->field('group_concat(num) as num')->where('uid='.$zjuid.' and pid='.$id)->group("uid,pid")->find();
+							if(empty($gmnum)){
+								$gmnum=M('shop_record')->field('group_concat(num) as num')->where('uid<'.$zjuid.' and pid='.$id)->group("uid,pid")->find();
+							}
+							$gznum=explode(',',$gmnum['num']);
+							$zj_num=$gznum[array_rand($gznum,1)];
+							if($zj_num){
+								$zjc=$zj_num-$zjnum;
+								$kaijiang_count=$kaijiang_count+$zjc;
+								if($zjc>0){
+									M('shop_kaijiang')->where('pid='.$id)->limit(abs($zjc))->setInc('create_time');
+								}elseif($zjc<0){
+									M('shop_kaijiang')->where('pid='.$id)->limit(abs($zjc))->setDec('create_time');
+								}
+							}
+						}
+					}
 					M('shop_period')->where('id='.$id)->save(array('state' =>'1','number'=>$info['number']+$price,'kaijang_time'=>$this->kjtime(),'kaijiang_count'=>$kaijiang_count,'jiang_num'=>implode(',',$jiang_num),'end_time'=>$this->getMillisecond()));
-					$period['jiang_num']=jiang_num($info['price']-1);
+					$period['jiang_num']=jiang_num($info['edit_price']-1);
             		$period['sid']=$info['sid'];
             		$period['create_time']=NOW_TIME;
             		$period['state']=0;
@@ -51,12 +78,11 @@ class PayModel extends Model{
 				}else{
 					M('shop_period')->where('id='.$id)->save(array('number'=>$info['number']+$price,'jiang_num'=>implode(',',$jiang_num)));
 				}
-				$wid=M('user')->where('id='.$uid)->getField('wid');
 				$data['code']='OK';
 				$data['msg']='购买成功';
-				$data['wid']=$wid;
 				$this->shop_order($data);
 				activity(4,$price,$uid);
+				$this->invite_price($uid,$price);
 				return $sn;
 			}else{
 				$this->error='您的余额不足请充值';
@@ -154,4 +180,9 @@ class PayModel extends Model{
   			M('shop_order')->add($data);
   		}
   	}
+
+  	public function invite_price($id,$price){
+  		$tid=M('user')->where('id='.$id)->getField('tid');
+  		M('user')->where('id='.$tid)->setInc('brokerage',(float)substr(sprintf("%.3f",$price*C('USER_INVITEL')/100),0,-1));
+	}
 }

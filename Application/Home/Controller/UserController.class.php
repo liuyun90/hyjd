@@ -22,6 +22,15 @@ class UserController extends WapController{
     }
   }
 
+  public function _before_tpl(){
+    $this->userlogin();
+  }
+  public function tpl($type){
+    $user=D('User')->info(UID);
+    $this->assign('user',$user);
+    $this->display($this->tplpath."user_".$type.".html");
+  }
+
   public function user($id,$type=''){
   	$user=D('User')->info($id);
   	$this->assign('user',$user);
@@ -58,19 +67,26 @@ class UserController extends WapController{
     }
   }
 
-  public function _before_bing_phone_app(){
+  public function _before_bing_phone(){
     $this->userlogin();
   }
-  public function bing_phone_app(){
-    if(M('user')->where(array('phone'=>I('phone')))->getField('id')){
-      $this->error('该手机已绑定！');
-    }
-    if(M('user')->where(array('id'=>UID))->setField('phone',I('phone'))){
-      $this->success('手机绑定成功！');
+  public function bing_phone(){
+    if(IS_POST){
+      if(M('user')->where(array('phone'=>I('phone')))->getField('id')){
+        $this->error('该手机已绑定！');
+      }
+      if(!cell_code_check(I('code'))){
+        $this->error('手机验证失败！');
+      }
+      if(M('user')->where(array('id'=>UID))->setField('phone',I('phone'))){
+        $this->success('手机绑定成功！');
+      }else{
+        $this->error('手机绑定失败！');
+      }
     }else{
-      $this->error('手机绑定失败！');
+      $this->display($this->tplpath."bing_phone.html");
     }
-}
+  }
 
   public function records($p=1,$state='',$uid=''){
   	$uid=$uid?$uid:UID;
@@ -262,7 +278,6 @@ class UserController extends WapController{
   public function _before_recharge_list(){
     $this->userlogin();
   }
-  
   public function recharge_list($p='',$paydate=''){
     $list=D('User')->recharge_list($p,$paydate);
     if(IS_AJAX){
@@ -271,5 +286,84 @@ class UserController extends WapController{
       $this->assign('list',D('User')->recharge_list());
       $this->display($this->tplpath."recharge_list.html");
     }
+  }
+
+  public function wxshare(){
+    $this->success($this->getSignPackage($_SERVER['HTTP_REFERER']));
+  }
+
+  public function _before_invite(){
+    $this->userlogin();
+  }
+  public function invite($p=1){
+    $this->ajaxReturn(D('User')->invite($p));
+  }
+
+  public function _before_mention(){
+    $this->userlogin();
+  }
+  public function mention(){
+    if(false !== D('User')->mention()){
+      $this->success('成功，等待处理！');
+    } else {
+      $error = D('User')->getError();
+      $this->error(empty($error) ? '未知错误！' : $error);
+    }
+  }
+
+  public function _before_commission(){
+    $this->userlogin();
+  }
+  public function commission($p=1){
+    $timedate=I('timedate');
+    if($timedate==1){
+        $map="FROM_UNIXTIME(create_time,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')";
+    }elseif($timedate==2){
+        $map="YEARWEEK(FROM_UNIXTIME(create_time,'%Y-%m-%d')) = YEARWEEK(now())";
+    }elseif($timedate==3){
+        $map="FROM_UNIXTIME(create_time,'%Y-%m')=date_format(now(),'%Y-%m')";
+    }
+    $map['tid']=UID;
+    $list = M('commission_log')->where($map)->order('id desc')->page($p.',20')->select();
+    if($list){
+        foreach ($list as $k=>$v){
+            $datalist[]=D('user')->userChange($v,'commission');
+        }
+    }
+    $this->ajaxReturn($datalist);
+  }
+
+  public function _before_mention_list(){
+    $this->userlogin();
+  }
+  public function mention_list($p=1){
+    $timedate=I('timedate');
+    $map['uid']=UID;
+    if($timedate==1){
+        $map="FROM_UNIXTIME(create_time,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')";
+    }elseif($timedate==2){
+        $map="YEARWEEK(FROM_UNIXTIME(create_time,'%Y-%m-%d')) = YEARWEEK(now())";
+    }elseif($timedate==3){
+        $map="FROM_UNIXTIME(create_time,'%Y-%m')=date_format(now(),'%Y-%m')";
+    }
+    $list = M('cash_log')->where($map)->order('id desc')->page($p.',20')->select();
+    if($list){
+        foreach ($list as $k=>$v){
+          $datalist[$k]['time']=time_format($v['create_time']);
+          $datalist[$k]['money']=$v['money'];
+          $datalist[$k]['time']=time_format($v['create_time']);
+          $datalist[$k]['type']=$v['type']==1?'充值':'提现';
+          if($v['type']==1){
+            $datalist[$k]['pay_state']='已到帐';
+          }else{
+            if($v['pay_state']==1){
+              $datalist[$k]['pay_state']='已打款';
+            }else{
+              $datalist[$k]['pay_state']='待处理';
+            }
+          }
+        }
+    }
+    $this->ajaxReturn($datalist);
   }
 }

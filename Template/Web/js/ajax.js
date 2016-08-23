@@ -26,7 +26,7 @@
         }
         return false;
     });
-    $('.ajax-post').click(function() {
+    $(document).on('click','.ajax-post',function(){
         var target, query, form;
         var target_form = $(this).attr('target-form');
         var that = this;
@@ -43,6 +43,7 @@
             $.post(target, query).success(function(data) {
                 layer.close(index);
                 if (data.status == 1) {
+                    $(that).prop('disabled', false);
                     layer.msg(data.info, {icon: 1,shade:0.8},function(){
                         var callback = $(that).attr('callback');
                         if(callback){

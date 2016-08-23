@@ -149,6 +149,7 @@ function pay_state($type) {
 		case 4  : return    '网银';     break;
 		case 5  : return    '云支付';     break;
 		case 6  : return    'PAYPAL';     break;
+		case 7  : return    '爱呗支付';     break;
         default : return    false;      break;
     }
 }

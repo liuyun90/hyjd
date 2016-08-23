@@ -1,5 +1,5 @@
 $(function(){
-	var page=2,run=true,loadajax=true,loadrecord=true,loadshare=true,loadlottery=true,loadrecharge=true,ThinkPHP = window.Think;
+	var page=2,run=true,loadajax=true,loadrecord=true,loadshare=true,loadlottery=true,loadinvite=true,loadcommission=true,loadmention_list=true,loadrecharge=true,ThinkPHP = window.Think;
 
 	/*tab标签切换*/
 	function tabs(tabTit, on, tabCon) {
@@ -75,9 +75,72 @@ $(function(){
 				    	theme:'dark',
 				    	callbacks:{
 				        	onScroll:function(){
-					            if(this.mcs.topPct>=95 && loadajax){           		
+					            if(this.mcs.topPct>=95 && loadajax){
 					            	loadajax=false;
 					            	lottery($('.lottery-list:hidden').data('page'));
+					            }
+					        }
+					    }
+					});
+				}
+			});
+			//加载邀请好友记录
+			$(tabCon).children().eq(index).find('#invite').is(function(){
+				if(loadinvite){
+					loadinvite=false;
+					$(this).hide();
+					invite(1);
+					//滚动加载
+					$(".inviteScrollbar").mCustomScrollbar({
+				    	setHeight:600,
+				    	theme:'dark',
+				    	callbacks:{
+				        	onScroll:function(){
+					            if(this.mcs.topPct>=95 && loadajax){
+					            	loadajax=false;
+					            	invite($('#invite:hidden').data('page'));
+					            }
+					        }
+					    }
+					});
+				}
+			});
+			//加载佣金明细记录
+			$(tabCon).children().eq(index).find('#commission').is(function(){
+				if(loadcommission){
+					loadcommission=false;
+					$(this).hide();
+					commission(1);
+					//滚动加载
+					$(".commissionScrollbar").mCustomScrollbar({
+				    	setHeight:600,
+				    	theme:'dark',
+				    	callbacks:{
+				        	onScroll:function(){
+					            if(this.mcs.topPct>=95 && loadajax){
+					            	loadajax=false;
+					            	commission($('#commission:hidden').data('page'));
+					            }
+					        }
+					    }
+					});
+				}
+			});
+			//加载提现记录
+			$(tabCon).children().eq(index).find('#mention_list').is(function(){
+				if(loadmention_list){
+					loadmention_list=false;
+					$(this).hide();
+					mention_list(1);
+					//滚动加载
+					$(".mention_listScrollbar").mCustomScrollbar({
+				    	setHeight:600,
+				    	theme:'dark',
+				    	callbacks:{
+				        	onScroll:function(){
+					            if(this.mcs.topPct>=95 && loadajax){
+					            	loadajax=false;
+					            	mention_list($('#mention_list:hidden').data('page'));
 					            }
 					        }
 					    }
@@ -367,6 +430,102 @@ $(function(){
 		});
 	}
 
+	//邀请好友列表
+	function invite(p){
+		var ithis=$('#invite:hidden');
+		ithis.show();
+		ithis.parents('.tabs-panel-item').append('<div class="loading"><span class="icon icon-spin3 animate-spin"></span> 正在努力加载...</div>');
+		var html=ithis.prop("outerHTML"),rhtml='';
+		ithis.hide();
+	    $.getJSON(ithis.attr('url'),{p: p},function(result){
+	    	$('.invite_count').text(result['count']);
+			if(result['list']){
+				$.each(result['list'], function(num, list){
+					var shtml=html;
+					$.each(list, function(i, field){
+						var rstr =new RegExp("{{shop_"+i+"}}","g");
+						shtml = shtml.replace(rstr,field);
+					});
+					rhtml+=shtml;
+			    });
+			    ithis.data('page',p+1);
+		    	$('.loading').remove();
+		    	$('#invite:last').after(rhtml);
+		    	loadajax=true;
+			}else{
+				$('.loading').html('<span class="icon icon-attention"></span> 神马都没有了');
+				setTimeout(function(){
+					$('.loading').remove();
+					loadajax=true;
+				},2000);
+			}
+		});
+	}
+
+	//佣金记录列表
+	function commission(p){
+		var state = $('.commissionScrollbar').prev().children('.label[c_type]').attr('c_type');
+		var ithis=$('#commission:hidden');
+		ithis.show();
+		ithis.parents('.tabs-panel-item').append('<div class="loading"><span class="icon icon-spin3 animate-spin"></span> 正在努力加载...</div>');
+		var html=ithis.prop("outerHTML"),rhtml='';
+		ithis.hide();
+	    $.getJSON(ithis.attr('url'),{p: p,timedate:state},function(result){
+			if(result){
+				$.each(result, function(num, list){
+					var shtml=html;
+					$.each(list, function(i, field){
+						var rstr =new RegExp("{{shop_"+i+"}}","g");
+						shtml = shtml.replace(rstr,field);
+					});
+					rhtml+=shtml;
+			    });
+			    ithis.data('page',p+1);
+		    	$('.loading').remove();
+		    	$('#commission:last').after(rhtml);
+		    	loadajax=true;
+			}else{
+				$('.loading').html('<span class="icon icon-attention"></span> 神马都没有了');
+				setTimeout(function(){
+					$('.loading').remove();
+					loadajax=true;
+				},2000);
+			}
+		});
+	}
+
+	//佣金记录列表
+	function mention_list(p){
+		var state = $('.mention_listScrollbar').prev().children('.label[time_type]').attr('time_type');
+		var ithis=$('#mention_list:hidden');
+		ithis.show();
+		ithis.parents('.tabs-panel-item').append('<div class="loading"><span class="icon icon-spin3 animate-spin"></span> 正在努力加载...</div>');
+		var html=ithis.prop("outerHTML"),rhtml='';
+		ithis.hide();
+	    $.getJSON(ithis.attr('url'),{p: p,timedate:state},function(result){
+			if(result){
+				$.each(result, function(num, list){
+					var shtml=html;
+					$.each(list, function(i, field){
+						var rstr =new RegExp("{{shop_"+i+"}}","g");
+						shtml = shtml.replace(rstr,field);
+					});
+					rhtml+=shtml;
+			    });
+			    ithis.data('page',p+1);
+		    	$('.loading').remove();
+		    	$('#mention_list:last').after(rhtml);
+		    	loadajax=true;
+			}else{
+				$('.loading').html('<span class="icon icon-attention"></span> 神马都没有了');
+				setTimeout(function(){
+					$('.loading').remove();
+					loadajax=true;
+				},2000);
+			}
+		});
+	}
+
 	//ajax 用户中心购买记录
   	function records(p) {
   		var state = arguments[1] || $('.label[state]').attr('state');
@@ -503,6 +662,7 @@ $(function(){
 	$(".pic_list_4").cxScroll({direction:"top"});
 	//tab切换
 	tabs(".tabs-tab","current",".product-content");
+	tabs(".m-user-title","activea",".tg-content");
 	//倒计时
 	$('#announced').is(function(){
 		if(htmltype=='announced'){
@@ -518,6 +678,7 @@ $(function(){
 			announced_ajax(xthis);
 		});
 	});
+
 	// $container.imagesLoaded()
 	// .always( function(instance,image){
  //    	console.log('all images loaded');
@@ -699,9 +860,21 @@ $(function(){
 	});
     $('[state]').click(function(event){
     	$('#records').empty();
-    	$('[state]').removeClass('label label-red');
+    	$(this).siblings().removeClass('label label-red');
     	$(this).addClass('label label-red')
     	records(1,$(this).attr('state'));
+    });
+    $('[c_type]').click(function(event){
+    	$('[id="commission"]:visible').remove();
+    	$(this).siblings().removeClass('label label-red');
+    	$(this).addClass('label label-red')
+    	commission(1);
+    });
+    $('[time_type]').click(function(event){
+    	$('[id="mention_list"]:visible').remove();
+    	$(this).siblings().removeClass('label label-red');
+    	$(this).addClass('label label-red')
+    	mention_list(1);
     });
     $('[paydate]').click(function(event){
     	$('#recharge').empty();

@@ -19,7 +19,6 @@
 	<![endif]-->
   </head>
   <body>
-    
   	<include file="{$web_tplpath}/header.html" />
 	  	<!-- 导航结束 -->
 		<div class="top-backs">
@@ -46,6 +45,9 @@
 							绑定微信：暂无绑定 <b><a href="#" class="a3 weixinb">立即绑定</a></b>
 						</li> -->
 						<li>
+							绑定手机：<notempty name="user['points']">已绑定<else/>暂无绑定 <b><a href="#" class="a3 phone">立即绑定</a></b></notempty>
+						</li>
+						<li>
 							账户余额：<span class="red">{$user.black}</span> {$web_currency}
 						</li>
 						<li>
@@ -64,6 +66,7 @@
 				<li class="current">夺宝记录</li>
 				<li>中奖记录</li>
 				<li>我的晒单</li>
+				<li>邀请记录</li>
 				<li>联系地址</li>
 				<li>充值记录</li>
 			</ul>
@@ -147,6 +150,184 @@
 				</div>
 				<!-- 晒单结束 -->
 
+				<!-- 推广记录开始 -->
+				<div class="tabs-panel-item" style="display: none">
+					<div class="user-duobao-list">
+						<div class="m-user-title">
+							<a href="#" class="activea">邀请好友</a>
+							<a href="#" class="">佣金明细</a>
+							<a href="#" class="">提现申请</a>
+							<a href="#" class="">提现记录</a>
+						</div>
+						<div class="tg-content">
+						<!-- 邀请好友开始 -->
+						<div class="tabs-nav-item">
+							<h3 class="b-title ">邀请好友</h3>
+							<div class="big-title">复制链接邀请好友，现金奖励等你拿！</div>
+							<div class="input-group">
+								<p>1元就能买IPhone 6哦，快去看看吧！{$web_url}?id={$user['id']}</p>
+								<a class="invite_act" onclick="copyText(document.all.invite_title)" href="javascript:;">复制链接</a>
+							</div>
+							<div class="labers-yellow">成功邀请 <span class="red invite_count">0</span> 位会员注册</div>
+							<div class="inviteScrollbar">
+								<table class="w-table">
+							        <thead>
+							            <tr>
+							                <th>用户名</th>
+							                <th>时间</th>
+							            </tr>
+							        </thead>
+							        <tbody>
+							        	<tr id='invite' url="{:U('user/invite')}">
+							        		<td class="col2"><img src="{{shop_user_pic}}" style="width: 40px;vertical-align: middle;margin-right:10px"><a href="{{shop_user_url}}" target="_blank">{{shop_user}}</a></td>
+							        		<td class="col1">{{shop_time}}</td>
+							        	</tr>
+							        </tbody>
+							    </table>
+							</div>
+						</div>
+						<!-- 邀请好友结束 -->
+
+						<!-- 佣金明细开始 -->
+						<div class="tabs-nav-item" style="display: none">
+							<h3 class="b-title">佣金明细</h3>
+							<div class="labers-yellow mt15">
+								<span class="mr15">累计收入：<span class="red">{$user['brokerage']+$user['withdraw_brokerage']}</span>元</span>
+								<span class="mr15">累计(提现/充值)：<span class="red">{$user['withdraw_brokerage']}</span>元</span>
+								<span class="mr15">佣金余额：<span class="red">{$user['brokerage']}</span>元</span>
+								<a class="labes labes-blue mentionbtn">申请提现</a>
+								<a class="labes labes-orgen rechargebtn">充值到我的账户</a>
+								<br>
+								佣金余额可实时充值到您的帐户，满100元时才可申请提现。
+							</div>
+							<div class="m-user-day">
+								<a href="javascript:void(0)" class="label label-red" c_type="">全部</a>
+								<a href="javascript:void(0)" c_type="1">今天</a>
+								<a href="javascript:void(0)" c_type="2">本周</a>
+								<a href="javascript:void(0)" c_type="3">本月</a>
+							</div>
+							<div class="commissionScrollbar">
+								<table class="w-table">
+							        <thead>
+							            <tr>
+							                <th>用户名</th>
+							                <th>时间</th>
+							                <th>描述</th>
+							                <th>金额(元)</th>
+							                <th>佣金(元)</th>
+							            </tr>
+							        </thead>
+							        <tbody>
+							        	<tr id='commission' url="{:U('user/commission')}">
+							        		<td class="col1"><img src="{{shop_img}}" style="width: 40px;vertical-align: middle;margin-right:10px"><a href="{{shop_user_url}}" target="_blank">{{shop_name}}</a></td>
+							        		<td class="col1">{{shop_create_time}}</td>
+							        		<td class="col2">{{shop_shop_name}}(第{{shop_shop_no}}期)</td>
+							        		<td class="col1">{{shop_number}}元</td>
+							        		<td class="col1 red">{{shop_money}}元</td>
+							        	</tr>
+							        </tbody>
+							    </table>
+							</div>
+						</div>
+						<!-- 佣金明细结束 -->
+						
+						<!-- 提现申请开始 -->
+						<div class="tabs-nav-item" style="display: none">
+							<h3 class="b-title">提现申请</h3>
+							<div class="labers-yellow mt15">
+								<span class="mr15">累计收入：<span class="red">{$user['brokerage']+$user['withdraw_brokerage']}</span>元</span>
+								<span class="mr15">累计(提现/充值)：<span class="red">{$user['withdraw_brokerage']}</span>元</span>
+								<span class="mr15">佣金余额：<span class="red">{$user['brokerage']}</span>元</span>
+								<a class="labes labes-orgen rechargebtn">充值到我的账户</a>
+								<br>
+								佣金余额可实时充值到您的帐户，满100元时才可申请提现。
+							</div>
+							<table class="w-table address-tr">
+								<form action="{:U('/user/mention')}" class="form-mention" method="post">
+						        <tbody>
+						        	<tr>
+						        		<td width="10%" align="right"><span class="red">*</span>提现金额：</td>
+						        		<td width="90%" class="adrs" align="left">
+						        			<input type="text" name="money" id="withraw-money" value="" placeholder="申请提现金额">元
+						        		</td>
+						            </tr>
+						        	<tr>
+						        		<td width="10%" align="right"><span class="red">*</span>手机号码：</td>
+						        		<td width="90%" class="adrs" align="left">
+						        			<input type="text" name="phone" id="withraw-phone" value="" placeholder="如：138****678">
+						        		</td>
+						            </tr>
+						        	<tr>
+						        		<td width="10%" align="right"><span class="red">*</span>开户人：</td>
+						        		<td width="90%" class="adrs" align="left">
+						        			<input type="text" name="account" id="withraw-account" value="" placeholder="姓名 如：张三">
+						        		</td>
+						            </tr>
+						        	<tr>
+						        		<td width="10%" align="right"><span class="red">*</span>银行名称：</td>
+						        		<td width="90%" class="adrs" align="left">
+						        			<input type="text" name="bank" id="withraw-bank" value="" placeholder="银行 如：中国工商银行">
+						        		</td>
+						            </tr>
+						        	<tr>
+						        		<td width="10%" align="right"><span class="red">*</span>开户支行：</td>
+						        		<td width="90%" class="adrs" align="left">
+						        			<input type="text" name="branch" id="withraw-branch" value="" placeholder="需具体到省市">
+						        		</td>
+						            </tr>
+						        	<tr>
+						        		<td width="10%" align="right"><span class="red">*</span>银行帐号：</td>
+						        		<td width="90%" class="adrs" align="left">
+						        			<input type="text" name="bank_number" id="withraw-bank_number" value="" placeholder="如：1234 5618 1234 5678 123">
+						        		</td>
+						            </tr>
+						        	<tr>
+						        		<td width="10%" align="right"></td>
+						        		<td width="90%" class="adrs" align="left">
+						        			<button class="mention btn btn-red ajax-post" target-form="form-mention" type="submit">申请提现</button>
+						        		</td>
+						            </tr>
+						        </tbody>
+						        </form>
+						    </table>
+						</div>
+						<!-- 提现申请结束 -->
+
+						<!-- 提现记录开始 -->
+						<div class="tabs-nav-item" style="display: none">
+							<h3 class="b-title ">提现记录</h3>
+							<div class="m-user-day">
+								<a href="javascript:void(0)" class="label label-red" time_type="">全部</a>
+								<a href="javascript:void(0)" time_type="1">今天</a>
+								<a href="javascript:void(0)" time_type="0">本周</a>
+								<a href="javascript:void(0)" time_type="2">本月</a>
+							</div>
+							<div class="mention_listScrollbar">
+								<table class="w-table">
+							        <thead>
+							            <tr>
+							                <th>申请时间</th>
+							                <th>类型</th>
+							                <th>提现金额(元)</th>
+							                <th>审核状态</th>
+							            </tr>
+							        </thead>
+							        <tbody>
+							        	<tr id='mention_list' url="{:U('user/mention_list')}">
+							        		<td class="col1">{{shop_time}}</td>
+							        		<td class="col1">{{shop_type}}</td>
+							        		<td class="col1 orgen">{{shop_money}} 元</td>
+							        		<td class="col1 red">{{shop_pay_state}}</td>
+							        	</tr>
+							        </tbody>
+							    </table>
+							</div>
+						</div>
+						</div>
+						<!-- 提现记录结束 -->
+					</div>
+				</div>
+				<!-- 推广记录结束 -->
 
 				<!-- 收货地址开始 -->
 				<div class="tabs-panel-item">
@@ -309,17 +490,77 @@
   		</div>
   	</div> -->
   	<!-- 绑定微信弹出结束 -->
+
+  	<!-- 绑定手机弹出开始 -->
+  	<div class="back-black phonebing" style="display: none;">
+  		<form method="post" action="{:U('user/bing_phone')}" class="form-phone">
+  		<div class="more-number">
+  			<div class="monu-heard">
+  				<span class="block-title">绑定手机</span>
+  				<i class="icon icon-cancel close"></i>
+  			</div>
+  			<div class="monu-body">
+  				<label><span>手机号码：</span><input type="text" name="phone" /></label>
+  				<label><span>验证码：</span><input type="text" name="code" /><button id="sendcode" class="btn btn-green" type="button">获取验证码</button></label>
+  				<button class="btn btn-red ajax-post" type="submit" callback="$('.phonebing').hide()" target-form="form-phone">确认绑定</button>
+  			</div>
+  		</div>
+  		</form>
+  	</div>
+  	<!-- 绑定手机弹出结束 -->
+
+  	<!-- 提现弹出开始 -->
+  	<div class="back-black mentiontc" style="display: none;">
+  		<form method="post" action="{:U('/user/mention')}" class="form-mention-tc">
+  		<div class="more-number">
+  			<div class="monu-heard">
+  				<span class="block-title">佣金提现</span>
+  				<i class="icon icon-cancel close"></i>
+  			</div>
+  			<div class="monu-body">
+  				<label><span>提现金额：</span><input type="text" name="money" id="withraw-money" value="" placeholder="申请提现金额">元</label>
+  				<label><span>手机号码：</span><input type="text" name="phone" id="withraw-phone" value="" placeholder="如：138****678"></label>
+  				<label><span>开户人：</span><input type="text" name="account" id="withraw-account" value="" placeholder="姓名 如：张三"></label>
+  				<label><span>银行名称：</span><input type="text" name="bank" id="withraw-bank" value="" placeholder="银行 如：中国工商银行"></label>
+  				<label><span>开户支行：</span><input type="text" name="branch" id="withraw-branch" value="" placeholder="需具体到省市"></label>
+  				<label><span>银行帐号：</span><input type="text" name="bank_number" id="withraw-bank_number" value="" placeholder="如：1234 5618 1234 5678 123"></label>
+  				<button class="mention btn btn-red ajax-post" target-form="form-mention-tc" type="submit">申请提现</button>
+  			</div>
+  		</div>
+  		</form>
+  	</div>
+  	<!-- 提现弹出结束 -->
+
+  	<!-- 提现弹出开始 -->
+  	<div class="back-black rechargetc" style="display: none;">
+  		<form method="post" action="{:U('/user/mention')}" class="form-recharge-tc">
+  		<div class="more-number">
+  			<div class="monu-heard">
+  				<span class="block-title">佣金充值</span>
+  				<i class="icon icon-cancel close"></i>
+  			</div>
+  			<div class="monu-body">
+  				<label><span>佣金金额：</span><span class="red">{$user['brokerage']}</span>元</label>
+  				<label><span>充值金额：</span><input type="text" name="money" id="r-money" value="">元 以整数为单位</label>
+  				<input type="hidden" name="type" value="1">
+  				<button class="btn btn-red ajax-post" target-form="form-recharge-tc" type="submit">充值</button>
+  			</div>
+  		</div>
+  		</form>
+  	</div>
+  	<!-- 提现弹出结束 -->
 	
 	<include file="{$web_tplpath}footer.html" />
 	<script type="text/javascript">var htmltype,uploadheads=false;</script>
 	<script src="{$web_tplpath}js/jquery.min.js"></script>
 	<script src="__STATIC__/layer/layer.js"></script>
 	<script src="{$web_tplpath}js/ajax.js"></script>
+	<script src="{$web_tplpath}js/copyToClipboard.js"></script>
 	<script src="{$web_tplpath}js/jquery.cxscroll.min.js"></script>
 	<script src="{$web_tplpath}js/cityselect/jquery.cityselect.js"></script>
 	<script src="{$web_tplpath}js/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script type="text/javascript" src="__STATIC__/dist/webuploader.js"></script>
-	<js href="__STATIC__/jcrop/jquery.Jcrop.min.js" />
+	<js href="__STATIC__/jcrop/jquery.Jcrop.min.js"/>
   	<script type="text/javascript" src="__JS__/uploadhead.js"></script>
 	<script src="{$web_tplpath}js/script.js"></script>
 	<!--[if lt IE 9]>
@@ -328,6 +569,29 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			address_list();
+
+			var i = 120;
+		    var intervalid;
+		    $("#sendcode").click(function(event) {
+		    	var pattern = new RegExp("^[1][35678][0-9]{9}$");
+		    	if(false == pattern.test($('[name="phone"]').val())){
+                    layer.msg('请填写正确的手机号码！', {icon: 2});
+                }else{
+			        $.get("{:U('public/sendcode',array('type'=>'bindcode'))}",{phone:$('[name="phone"]').val()}).success(function(data){
+			            $(this).attr({"disabled":"true"});
+			            intervalid = setInterval("codefun()",1000);
+			        });
+			    }
+		    });
+		     codefun=function(){
+		        if (i == 0){
+		            $("#sendcode").removeAttr("disabled");
+		              clearInterval(intervalid);
+		              $('#sendcode').html("获取验证码");
+		        }
+		        $('#sendcode').html(i+"秒后重新获取");
+		        i--;
+		    }
 		
 			// 弹出头像层
 			$(".user-faceEdit").click(function(){
@@ -355,6 +619,26 @@
 			$(".close").click(function(){
 				$(".weixin").hide();
 			});
+			// 弹出绑定手机层
+			$(".phone").click(function(){
+				$(".phonebing").show();
+			});
+			// 关闭绑定手机层.
+			$(".close").click(function(){
+				$(".phonebing").hide();
+			});
+			$(".mentionbtn").click(function(){
+				$('.mentiontc').show();
+			});
+			$(".close").click(function(){
+				$(".mentiontc").hide();
+			});
+			$(".rechargebtn").click(function(){
+				$('.rechargetc').show();
+			});
+			$(".close").click(function(){
+				$(".rechargetc").hide();
+			});
 			// 编辑名字
 			$("#setname").on('click','.useredit-name:contains(编辑)',function(){
 				$(this).siblings("h3").hide();
@@ -371,6 +655,34 @@
 					$(thas).siblings("i").hide();
 				});
 			});
+			$('.mention').click(function(event){
+	            var money=$('#withraw-money').val();
+	            if(money.length==0){
+	                layer.msg('请填写提现金额！', {icon: 2,shade:0.8});
+	                return false;
+	            }
+	            if(money%100!=0){
+	                layer.msg('提现金额只能是整百！', {icon: 2,shade:0.8});
+	                return false;
+	            }
+	            if($('#withraw-account').val().length==0){
+	                layer.msg('请填写开户人！', {icon: 2,shade:0.8});
+	                return false;
+	            }
+	            if($('#withraw-bank').val().length==0){
+	                layer.msg('请填写银行名称！', {icon: 2,shade:0.8});
+	                return false;
+	            }
+	            if($('#withraw-bank_number').val().length==0){
+	                layer.msg('请填写银行帐号！', {icon: 2,shade:0.8});
+	                return false;
+	            }
+	            if($('#withraw-phone').val().length==0){
+	                layer.msg('请填写联系电话！', {icon: 2,shade:0.8});
+	                return false;
+	            }
+	            $('.ajax-post').trigger("click");
+	        });
 			// 弹出追加次数
 			$('#records').on('click','.peopleadd',function(){
 				$(this).hide();
@@ -423,11 +735,11 @@
 			});
 
 	        $("#city").citySelect({
-	          url: "{$web_tplpath}js/cityselect/city.min.js",
-	          prov: "{$user['province']}",
-	          city: "{$user['city']}",
-	          dist: "",
-	          nodata: "null"
+	          	url: "{$web_tplpath}js/cityselect/city.min.js",
+	          	prov: "{$user['province']}",
+	          	city: "{$user['city']}",
+	          	dist: "",
+	          	nodata: "null"
 	        });
 
 		});

@@ -28,9 +28,15 @@ class PublicController extends Controller {
         $this->login_qq_appid=C('LOGIN_QQ_APPID');
         $this->login_wx_appid=C('LOGIN_WX_APPID');
 		$this->web_path=__ROOT__."/";
-        $this->tplpath="./".C('TMPL_PATH')."/Web/";
-        $this->web_tplpath=$this->web_path.C('TMPL_PATH')."/Web/";
-        C('CACHE_PATH',RUNTIME_PATH."/Cache/".MODULE_NAME."/Web/");
+        if(is_mobile()){
+            $this->tplpath="./".C('TMPL_PATH')."/Wap/";
+            $this->web_tplpath=$this->web_path.C('TMPL_PATH')."/Wap/";
+            C('CACHE_PATH',RUNTIME_PATH."/Cache/".MODULE_NAME."/Wap/");
+        }else{
+            $this->tplpath="./".C('TMPL_PATH')."/Web/";
+            $this->web_tplpath=$this->web_path.C('TMPL_PATH')."/Web/";
+            C('CACHE_PATH',RUNTIME_PATH."/Cache/".MODULE_NAME."/Web/");
+        }
 	}
 
     public function servertime(){
@@ -81,6 +87,10 @@ class PublicController extends Controller {
         $this->wechatLogin($code,C('LOGIN_WX_APPID'),C('LOGIN_WX_APPSECRET'));
     }
 
+    public function appwxlogin($code){
+        $this->wechatLogin($code,C('APP_WX_APPID'),C('APP_WX_APPSECRET'));
+    }
+
     protected function wechatLogin($code,$appid,$appsecret){
         $auth  = new WechatAuth($appid, $appsecret);
         $token=$auth->getAccessToken('code',$code);
@@ -90,11 +100,7 @@ class PublicController extends Controller {
             D('Public')->autoLogin($user);
             //启动用户登录类活动
             activity(2,$user['id'],$user['id']);
-            if(isset($_GET['state'])){
-                $this->success('登录成功！'.$user['id'], $this->web_url.U('Index/index',array("cookie"=>$_COOKIE['PHPSESSID'])));
-            }else{
-                $this->success('登录成功！', $this->web_url.U('Index/index'));
-            }
+            $this->success('登录成功！', $this->web_url.U('Index/index'));
         }else{
             $data = $auth->getUserInfo($token['unionid']);
             $data['password']=think_ucenter_md5($data['openid']);
@@ -103,6 +109,9 @@ class PublicController extends Controller {
             $data['create_time']=NOW_TIME;
             $data['activation']=1;
             unset($data['language'],$data['privilege'],$data['openid']);
+            if(session('uid')){
+                $data['tid']=session('uid');
+            }
             $uid=M('User')->add($data);
             $auth = array(
                 'uid'             => $uid,
@@ -134,12 +143,55 @@ class PublicController extends Controller {
         $oid=$qc->get_openid();
         $map['qqopenid']=$oid;
         $map['status']=1;
-        if(isset($_GET['state'])){
-            $map['wid'] = intval($_GET['state']);
-        }
         $user=M('User')->where($map)->field('id,nickname')->find();
         if(!$user){
             $qc = new \QC(C('LOGIN_QQ_APPID'),C('LOGIN_QQ_APPKEY'),C('WEB_URL').C('LOGIN_QQ_CALLBACK'),$acs,$oid);
+            $ret = $qc->get_user_info();
+            $data['nickname']=$ret['nickname'];
+            $data['password']=think_ucenter_md5($map['qqopenid']);
+            $data['qqopenid']=$oid;
+            $data['headimgurl']=$ret['figureurl_qq_1'];
+            $data['province']=$ret['province'];
+            $data['city']=$ret['city'];
+            $data['sex']=$ret['gender']=='男'?1:2;
+            $data['login_ip']=ip2long(get_client_ip());
+            $data['status']=1;
+            $data['create_time']=NOW_TIME;
+            $data['activation']=1;
+            if(session('uid')){
+                $data['tid']=session('uid');
+            }
+            $uid=M('User')->add($data);
+            $auth = array(
+                'uid'             => $uid,
+                'username'        => $ret['nickname']
+            );
+            session('user_auth', $auth);
+            session('user_auth_sign', data_auth_sign($auth));
+            if(session('uid')){
+                activity(7,$uid,$uid);
+                session('uid',null);
+            }
+            //启动用户注册活动
+            activity(1,$uid,$uid);
+            $filename=getcwd().'/Template/Web/images/login2.jpg';
+            $qc->add_pic_t(array("content"=>"1元就可以有机会买到iphone 6手机 ".$this->web_url,"pic"=>"@{$filename}"));
+            $this->success('用户注册成功！',$this->web_url.U('index/index'));
+        }else{
+            D('Public')->autoLogin($user);
+            //启动用户登录类活动
+            activity(2,$user['id'],$user['id']);
+            $this->success('登录成功！',$this->web_url.U('index/index'));
+        }
+    }
+
+    public function appqqlogin($access_token,$openid){
+        $map['qqopenid']=$openid;
+        $map['status']=1;
+        $user=M('User')->where($map)->field('id,nickname')->find();
+        if(!$user){
+            import('Com.QqConnect.qqConnect');
+            $qc = new \QC(C('APP_QQ_APPID'),C('APP_QQ_APPKEY'),'',$access_token,$openid);
             $ret = $qc->get_user_info();
             $data['nickname']=$ret['nickname'];
             $data['password']=think_ucenter_md5($map['qqopenid']);
@@ -235,6 +287,65 @@ class PublicController extends Controller {
 		}
 	}
 
+    public function reg_app(){
+        if(!C('USER_ALLOW_REGISTER')){
+            $this->error('注册已经关闭，请稍后注册~');
+        }
+        if(IS_POST){
+             /* 检测验证码 TODO: */
+            if(!cell_code_check(I('code'))){
+                $this->error('手机验证失败！');
+            }
+            if(I("password") != I("repassword")){
+                $this->error('密码和重复密码不一致！');
+            }
+            $map['phone']=I('username');
+            if(M('user')->where($map)->getField('id')){
+                $this->error('用户已经注册！');
+            }
+            if(!$this->check_name(I('phone'))){
+                $this->error('请正确输入注册手机号');
+            }
+            $uid = D('Public')->reg();
+            if(is_numeric($uid)){
+                //启动用户注册活动
+                session('cell_code', null);
+                activity(1,$uid,$uid);
+                $map=array('id' => $uid,'status'=>1);
+                M('user')->where($map)->setField('activation',1);
+                $auth = array('uid' => $uid,'username' => I('username'));
+                session('user_auth', $auth);
+                session('user_auth_sign', data_auth_sign($auth));
+                $this->success('用户注册成功！');
+            } else {
+                $this->error(D('Public')->getError());
+            }
+        }
+    }
+
+    public function findpwd_app(){
+        if(IS_POST){
+            $map['phone']=I('username');
+            if(!M('user')->where($map)->getField('id')){
+                $this->error('没有该用户！');
+            }
+            if(!$this->check_name(I('username'))){
+                $this->error('请正确输入注册手机号');
+            }
+            if(!cell_code_check(I('code'))){
+                $this->error('手机验证失败！');
+            }
+            if(I("password") != I("repassword")){
+                $this->error('密码和重复密码不一致！');
+            }
+            if(M('user')->where($map)->setField('password',think_ucenter_md5(I('password')))){
+                $this->success('密码修改成功！');
+            }else{
+                $this->error('密码修改失败！');
+            }
+        }
+    }
+
     public function email($uid=null,$key=null){
         $map=array('id' => $uid, 'password'=>$key,'status'=>1);
         if(M('user')->where($map)->setField('activation',1)){
@@ -249,7 +360,7 @@ class PublicController extends Controller {
 
     public function phone($uid=null,$code=null){
         if(IS_POST){
-            if($this->cell_code_check($code)){
+            if(cell_code_check($code)){
                 $map=array('id' => $uid,'status'=>1);
                 if(M('user')->where($map)->setField('activation',1)){
                     session('cell_code', null);
@@ -271,7 +382,7 @@ class PublicController extends Controller {
             if($type=='reg'){
                 $this->cellcode($username);
             }elseif($type=='bindcode'){
-                $this->cellcode($username);
+                $this->bindcode($username);
             }else{
                 $this->pswcode($username);
             }
@@ -306,7 +417,7 @@ class PublicController extends Controller {
                 break;
             case 2:
                 if(IS_POST){
-                    if($this->cell_code_check(I('post.code'))){
+                    if(cell_code_check(I('post.code'))){
                         $map=array('id' => I('post.uid'),'status'=>1);
                         $user=M('user')->field('id,password')->where($map)->find();
                         session('cell_code', null);
@@ -354,11 +465,6 @@ class PublicController extends Controller {
         }
 	}
 
-	public function login_cookie(){
-		return 'PHPSESSID='.cookie('PHPSESSID').';path='.cookie('path');
-	}
-
-
     public function verify(){
         ob_clean();
         $config =   array(
@@ -383,7 +489,7 @@ class PublicController extends Controller {
     }
 
     protected function jhMail($uid,$username,$password){
-        $url=$this->web_url."/public/email/uid/".$uid."/key/".$password;
+        $url=$this->web_url.U('public/email',array('uid'=>$uid,'key'=>$password));
         return sendMail($username,'感谢您注册'.$this->web_title.'-帐号激活邮件','<div class="wrapper" style="margin: 20px auto 0; width: 500px; padding-top:16px; padding-bottom:10px;"><br style="clear:both; height:0"><div class="content" style="background: none repeat scroll 0 0 #FFFFFF; border: 1px solid #E9E9E9; margin: 2px 0 0; padding: 30px;"><p>您好: </p><p>感谢您注册 <a href="'.$this->web_url.'">'.$this->web_title.'</a></p><p style="border-top: 1px solid #DDDDDD;margin: 15px 0 25px;padding: 15px;">请点击以下链接激活并设置您的账号: <a href="'.$url.'" target="_blank">'.$url.'</a></p><p style="border-top: 1px solid #DDDDDD; padding-top:6px; margin-top:25px; color:#838383;"><p>请勿回复本邮件, 此邮箱未受监控, 您不会得到任何回复。</p><p>如果点击上面的链接无效，请尝试将链接复制到浏览器地址栏访问。</p></p></div></div>');
     }
 
@@ -400,7 +506,7 @@ class PublicController extends Controller {
     }
 
     protected function pwdMail($uid,$username,$password){
-        $url=$this->web_url."/public/forgetpwd/step/3/uid/".$uid."/key/".$password;
+        $url=$this->web_url.U('public/forgetpwd',array('step'=>3,'uid'=>$uid,'key'=>$password));
         return sendMail($username,$this->web_title.'-密码找回','<div class="wrapper" style="margin: 20px auto 0; width: 500px; padding-top:16px; padding-bottom:10px;"><br style="clear:both; height:0"><div class="content" style="background: none repeat scroll 0 0 #FFFFFF; border: 1px solid #E9E9E9; margin: 2px 0 0; padding: 30px;"><p>您好: </p><p style="border-top: 1px solid #DDDDDD;margin: 15px 0 25px;padding: 15px;">您最近提出了密码重设请求。要完成此过程，请点按以下链接: <a href="'.$url.'" target="_blank">'.$url.'</a></p><p style="border-top: 1px solid #DDDDDD; padding-top:6px; margin-top:25px; color:#838383;"><p>如果您未提出此请求，可能是其他用户无意中输入了您的电子邮件地址，您的帐户仍然安全。</p><p>请勿回复本邮件, 此邮箱未受监控, 您不会得到任何回复。</p><p>如果点击上面的链接无效，请尝试将链接复制到浏览器地址栏访问。</p></p></div></div>');
     }
 
@@ -429,19 +535,39 @@ class PublicController extends Controller {
         $request = new SmsNumSend;
         $code=$this->randString();
         $this->cell_code($code);
-        $smsParams = array(
+        $smsParams = [
             'code'    => $code,
             'product' => C("WEB_SITE_TITLE")
-        );
+        ];
         // 设置请求参数
-        $req = $request->setSmsTemplateCode('SMS_5235593')
+        $req = $request->setSmsTemplateCode(C("AlidayuTplReg"))
             ->setRecNum($cell)
             ->setSmsParam(json_encode($smsParams))
             ->setSmsFreeSignName('注册验证')
             ->setSmsType('normal')
             ->setExtend('reg');
         $request=$client->execute($req);
-        $this->ajaxReturn($request);
+        $this->ajaxReturn($request["alibaba_aliqin_fc_sms_num_send_response"]["result"]);
+    }
+
+    protected function bindcode($cell){
+        $client  = new Client;
+        $request = new SmsNumSend;
+        $code=$this->randString();
+        $this->cell_code($code);
+        $smsParams = [
+            'code'    => $code,
+            'product' => C("WEB_SITE_TITLE")
+        ];
+        // 设置请求参数
+        $req = $request->setSmsTemplateCode(C("AlidayuTplId"))
+            ->setRecNum($cell)
+            ->setSmsParam(json_encode($smsParams))
+            ->setSmsFreeSignName('身份验证')
+            ->setSmsType('normal')
+            ->setExtend('reg');
+        $request=$client->execute($req);
+        $this->ajaxReturn($request["alibaba_aliqin_fc_sms_num_send_response"]["result"]);
     }
 
     public function pswcode($cell){
@@ -449,12 +575,12 @@ class PublicController extends Controller {
         $request = new SmsNumSend;
         $code=$this->randString();
         $this->cell_code($code);
-        $smsParams = array(
+        $smsParams = [
             'code'    => $code,
             'product' => C("WEB_SITE_TITLE")
-        );
+        ];
         // 设置请求参数
-        $req = $request->setSmsTemplateCode('SMS_5235591')
+        $req = $request->setSmsTemplateCode(C("AlidayuTplPw"))
             ->setRecNum($cell)
             ->setSmsParam(json_encode($smsParams))
             ->setSmsFreeSignName('变更验证')
@@ -462,42 +588,6 @@ class PublicController extends Controller {
             ->setExtend('getpasd');
         $request=$client->execute($req);
         $this->ajaxReturn($request["alibaba_aliqin_fc_sms_num_send_response"]["result"]);
-    }
-
-    public function bindcode($cell){
-        $client  = new Client;
-        $request = new SmsNumSend;
-        $code=$this->randString();
-        $this->cell_code($code);
-        $smsParams = array(
-            'code'    => $code,
-            'product' => C("WEB_SITE_TITLE")
-        );
-        // 设置请求参数
-        $req = $request->setSmsTemplateCode('SMS_5235596')
-            ->setRecNum($cell)
-            ->setSmsParam(json_encode($smsParams))
-            ->setSmsFreeSignName('身份验证验证码')
-            ->setSmsType('normal')
-            ->setExtend('getpasd');
-        $request=$client->execute($req);
-        $this->ajaxReturn($request["alibaba_aliqin_fc_sms_num_send_response"]["result"]);
-    }
-
-    protected function cell_code_check($code) {
-        $session = session('cell_code');
-        if(empty($code) || empty($session)) {
-            return false;
-        }
-        // session 过期
-        if(NOW_TIME - $session['cell_time'] > 1800) {
-            session('cell_code', null);
-            return false;
-        }
-        if($code == $session['cell_code']) {
-            return true;
-        }
-        return false;
     }
 
     protected function check_name($username){

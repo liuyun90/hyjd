@@ -5,7 +5,7 @@
         var uploader = WebUploader.create({
             auto: true,
             swf: 'dist/Uploader.swf',
-            server: '/Picture/uploadHeadPicture',
+            server: 'index.php?s=Picture/uploadHeadPicture',
             pick: '#filePicker',
             accept: {
                 title: 'Images',
@@ -111,7 +111,7 @@
             $(this).text('正在保存');
             $(this).addClass('disabled');
             var crop2 = crop.x + ',' + crop.y + ',' + crop.w  + ',' + crop.h;
-            $.post('/picture/cropImg/', {crop: crop2}, function (a) {
+            $.post('index.php?s=picture/cropImg', {crop: crop2}, function (a) {
                 if (a.status) {
                     $(btnthis).text('保存头像');
                     $(btnthis).removeClass('disabled');

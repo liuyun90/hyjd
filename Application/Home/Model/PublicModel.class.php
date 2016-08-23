@@ -61,6 +61,9 @@ class PublicModel extends Model {
 			$data['province']=$city['region'];
 			$data['city']=$city['city'];
 			$data['headimgurl']='/Picture/Head/user-icon.png';
+			if(session('uid')){
+                $data['tid']=session('uid');
+            }
 			return M('User')->add($data);
 		} else {
 			$this->error=D('User')->getError();

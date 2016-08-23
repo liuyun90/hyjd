@@ -4,6 +4,10 @@ namespace Home\Controller;
 class IndexController extends WapController {
 
     public function index($p=1,$num=20){
+        if(I('get.id')){
+            header("Location:/activity/content/id/57/uid/".I('get.id'));
+            return false;
+        }
     	$shop=D('Shop')->period($p,'',$num);
     	if(IS_AJAX){
     		$this->ajaxReturn($shop);
@@ -56,5 +60,17 @@ class IndexController extends WapController {
             "app_qq_appid"=>C('APP_QQ_APPID')
         );
         $this->ajaxReturn($conifg);
+    }
+
+    public function appindex($p,$num){
+        $slider=M('slider')->where('status=1')->order('id desc')->select();
+        foreach ($slider as $key => $value) {
+            $data[$key]['title']=$value['title'];
+            $data[$key]['pic']=get_cover($value['cover_id'],"path");
+            $data[$key]['url']=$value['link'];
+        }
+        $lottery=D('User')->lottery('',1);
+        $shop=D('Shop')->period($p,'',$num);
+        $this->ajaxReturn(array('slider'=>$data,'lottery'=>$lottery,'shop'=>$shop));
     }
 }

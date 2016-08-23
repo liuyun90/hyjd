@@ -127,6 +127,57 @@ class UserModel extends Model{
 		}
 	}
 
+	public function invite($p){
+		$map['tid']=UID;
+		$map['status']=1;
+		$map['activation']=1;
+		$count=M('user')->where($map)->count();
+		$invite=M('user')->where($map)->field('id,nickname,headimgurl,create_time')->page($p.',20')->order('id desc')->select();
+		if($invite){
+			foreach ($invite as $k=>$v){
+				$list[$k]['user']=is_numeric($v['nickname'])?substr_replace($v['nickname'],'****',3,4):$v['nickname'];
+				$list[$k]['user_pic']=completion_pic($v["headimgurl"]);
+				$list[$k]['user_url']=url_change("user/user",array("id"=>$v["id"],"name"=>'user'));
+				$list[$k]["time"]=time_format($val["create_time"]);
+			}
+		}
+		return array('list'=>$list,'count'=>$count);
+	}
+
+	public function mention(){
+    	$brokerage=M('user')->where(array('id'=>UID))->getField('brokerage');
+    	if($brokerage>=I('money')){
+    		if(!I('money')){
+    			$this->error = '金额不能为空！';
+				return false;
+    		}
+    		if(intval(I('money'))!=I('money')){
+	            $this->error = '必须是整数为单位';
+				return false;
+	        }
+    		M('user')->where(array('id'=>UID))->setDec('brokerage',I('money'));
+    		M('user')->where(array('id'=>UID))->setInc('withdraw_brokerage',I('money'));
+    		if(I('type')){
+    			$data['type']=I('type');
+    			$data['pay_state']=1;
+    			M('user')->where(array('id'=>UID))->setInc('black',I('money'));
+    		}
+    		$data['uid']=UID;
+	        $data['money']=I('money');
+			$data['account']=I('account');
+			$data['bank']=I('bank');
+			$data['branch']=I('branch');
+			$data['bank_number']=I('bank_number');
+			$data['phone']=I('phone');
+			$data['create_time']=NOW_TIME;
+	        $res = M('cash_log')->add($data);
+        return $res;
+    	}else{
+    		$this->error = '您还没有那么多佣金！';
+			return false;
+    	}
+    }
+
 	public function shared_update($pid){
 		$rules = array(     
 			array('content','require','晒单内容不能为空！')
@@ -277,6 +328,17 @@ class UserModel extends Model{
 				$data["time"]=time_format($val["kaijang_time"]);
 				$data['shared_time']=time_format($val['create_time']);
 				break;
+			case 'commission':
+				$data['number']=$val['number'];
+				$data['money']=$val['money'];
+				$data['create_time']=time_format($val['create_time']);
+				$data=array_merge($data,$this->getshop($val['pid']));
+				if($data['shop_state']==2){
+					$data['shop_url']=U("shop/over",array("id"=>$val['pid']));
+				}else{
+					$data['shop_url']=U("shop/index",array("id"=>$val['pid']));
+				}
+				break;
 			default:
 				break;
 		}
@@ -289,5 +351,11 @@ class UserModel extends Model{
 			return true;
 		}
 		return false;
+	}
+
+	protected function getshop($pid){
+		$shop=M('shop_period')->field('state as shop_state,no as shop_no,sid')->where('id='.$pid)->find();
+		$shop=array_merge($shop,M('shop')->field('name as shop_name,price as shop_price,buy_price as shop_buy_price')->where('id='.$shop['sid'])->find());
+		return $shop;
 	}
 }

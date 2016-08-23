@@ -79,7 +79,7 @@
             //swf: 'dist/Uploader.swf',
             chunked: false,
             chunkSize: 512 * 1024,
-            server: '/Picture/uploadPicture',
+            server: 'index.php?s=Picture/uploadPicture',
             // runtimeOrder: 'flash',
 
             accept: {

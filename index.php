@@ -5,7 +5,7 @@
 if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
 
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false true
-define('APP_DEBUG',true);
+define('APP_DEBUG',false);
 define('BIND_MODULE','Home');
 
 // 定义应用目录

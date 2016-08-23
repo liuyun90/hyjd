@@ -79,7 +79,7 @@
             //swf: 'dist/Uploader.swf',
             chunked: false,
             chunkSize: 512 * 1024,
-            server: '/Picture/uploadPicture',
+            server: 'index.php?s=Picture/uploadPicture',
             // runtimeOrder: 'flash',
             accept: {
                 title: 'Images',
@@ -172,7 +172,7 @@
                         img = $('<img src="'+src+'">');
                         $wrap.empty().append( img );
                     } else {
-                        $.ajax('/Picture/preview', {
+                        $.ajax('index.php?s=Picture/preview', {
                             method: 'POST',
                             data: src,
                             dataType:'json'

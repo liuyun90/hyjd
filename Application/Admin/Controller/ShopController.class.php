@@ -61,6 +61,7 @@ class ShopController extends WebController {
         } else {
             $this->meta_title = '添加商品';
             $this->assign('category', D('Shop')->getTree());
+            $this->assign('ten',   D('ten')->getTree());
             $this->display('edit');
         }
     }

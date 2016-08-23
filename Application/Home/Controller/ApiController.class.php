@@ -139,4 +139,28 @@ class ApiController extends Controller{
             echo 'fail';
         }
     }
+
+    public function pay_iapp_notify(){
+        $string = $_POST;
+        if(stripos("%22",$string['transdata'])){ //判断接收到的数据是否做过 Urldecode处理，如果没有处理则对数据进行Urldecode处理
+            $string= array_map('urldecode',$string);
+        }
+        $IappPay = new IappPay();
+        $respData = 'transdata='.$string['transdata'].'&sign='.$string['sign'].'&signtype='.$string['signtype'];
+        if($IappPay->parseResp($respData, $respJson)){
+            echo 'success'."\n";
+            $transdata=$string['transdata'];
+            $arr=json_decode($transdata);
+            $attach=explode('|',$arr->cpprivate);
+            $pid=$attach[0];
+            $uid=$attach[1];
+            if(!empty($pid)){
+                D('Pay')->payadd($pid,$arr->cporderid,intval($arr->money),$uid,7,$arr->transid);
+            }else{
+                D('Pay')->recharge($uid,$arr->cporderid,intval($arr->money),7,1,$arr->transid);
+            }
+        }else{
+            echo 'failed'."\n";
+        }
+    }
 }
